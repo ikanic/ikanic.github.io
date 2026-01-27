@@ -1,0 +1,602 @@
+@import "tailwindcss";
+
+/* 폰트 설정 */
+* {
+    font-family:
+        "Pretendard",
+        -apple-system,
+        BlinkMacSystemFont,
+        system-ui,
+        sans-serif;
+}
+
+code,
+pre,
+kbd,
+samp,
+.code-font {
+    font-family: "D2Coding", "Courier New", monospace !important;
+}
+
+@layer utilities {
+    /* 애니메이션 딜레이 */
+    .animation-delay-2000 {
+        animation-delay: 2s;
+    }
+    .animation-delay-4000 {
+        animation-delay: 4s;
+    }
+
+    /* 스크롤바 스타일링 */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+}
+
+/* Blob 애니메이션 */
+@keyframes blob {
+    0% {
+        transform: translate(0px, 0px) scale(1);
+    }
+    33% {
+        transform: translate(30px, -50px) scale(1.1);
+    }
+    66% {
+        transform: translate(-20px, 20px) scale(0.9);
+    }
+    100% {
+        transform: translate(0px, 0px) scale(1);
+    }
+}
+
+.animate-blob {
+    animation: blob 7s infinite;
+}
+
+/* 마크다운 스타일링 */
+.prose {
+    color: rgb(55, 65, 81);
+    max-width: none;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+    color: rgb(17, 24, 39);
+    font-weight: bold;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.prose h1 {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+}
+
+.prose h2 {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+}
+
+.prose h3 {
+    font-size: 1.5rem;
+    line-height: 2rem;
+}
+
+.prose p {
+    margin-bottom: 1rem;
+    line-height: 1.75;
+    color: rgb(55, 65, 81);
+}
+
+/* 링크 스타일 */
+.prose a {
+    color: rgb(219, 39, 119);
+    background-color: rgba(255, 192, 203, 0.25);
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.prose a:hover {
+    color: rgb(190, 24, 93);
+    background-color: rgba(255, 192, 203, 0.4);
+    text-decoration: underline;
+    text-decoration-color: rgb(219, 39, 119);
+}
+
+.prose strong {
+    color: rgb(17, 24, 39);
+    font-weight: 700;
+}
+
+.prose em {
+    font-style: italic;
+}
+
+/* 취소선 */
+.prose del,
+.prose s {
+    text-decoration: line-through;
+    text-decoration-thickness: 2px;
+    text-decoration-color: rgb(239, 68, 68);
+    color: rgb(156, 163, 175);
+    opacity: 0.6;
+}
+
+/* 인라인 코드 */
+.prose code {
+    background-color: rgba(59, 130, 246, 0.15);
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    color: rgb(190, 24, 93);
+    font-size: 0.875rem;
+    font-family: "D2Coding", monospace;
+    font-weight: 600;
+}
+
+/* 코드 블록 래퍼 */
+.code-block-wrapper {
+    margin: 1.5rem 0;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: linear-gradient(to bottom, rgb(31, 41, 55), rgb(17, 24, 39));
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.code-block-wrapper figure {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+}
+
+/* 코드 블록 헤더 */
+.code-block-header {
+    background: rgba(17, 24, 39, 0.8);
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+    min-height: 2.5rem;
+}
+
+.code-block-header:empty {
+    padding: 0.5rem 1rem;
+}
+
+/* 맥북 버튼들 */
+.mac-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.mac-button {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.mac-close {
+    background-color: #ff5f56;
+}
+
+.mac-minimize {
+    background-color: #ffbd2e;
+}
+
+.mac-maximize {
+    background-color: #27c93f;
+}
+
+/* 코드 타이틀 */
+.code-title {
+    color: rgb(156, 163, 175);
+    font-size: 0.875rem;
+    font-family: "D2Coding", monospace;
+    font-weight: 500;
+    flex: 1;
+}
+
+/* 코드 블록 자체 */
+.code-block-wrapper pre {
+    margin: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    padding: 1.25rem 0 !important;
+    overflow-x: auto;
+    counter-reset: line;
+}
+
+/* 모든 줄에 동일한 패딩 적용 */
+.code-block-wrapper [data-line] {
+    display: block !important;
+    padding-left: 4.5rem !important;
+    padding-right: 1rem !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    position: relative !important;
+    line-height: 1.7 !important;
+}
+
+/* 줄 번호 - 모든 경우에 동일한 위치 */
+.code-block-wrapper [data-line] > .line-number {
+    display: inline-block !important;
+    position: absolute !important;
+    left: 0.5rem !important;
+    top: 0 !important;
+    width: 2rem !important;
+    text-align: right !important;
+    color: rgb(75, 85, 99) !important;
+    user-select: none !important;
+    font-size: 0.875rem !important;
+    line-height: 1.7 !important;
+    vertical-align: top !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* diff 기호 위치 */
+.code-block-wrapper [data-line] > .diff-symbol {
+    display: inline-block !important;
+    position: absolute !important;
+    left: 3rem !important;
+    top: 0 !important;
+    width: 1rem !important;
+    text-align: left !important;
+    font-weight: bold !important;
+    user-select: none !important;
+    line-height: 1.7 !important;
+    vertical-align: top !important;
+}
+
+/* 추가된 줄 스타일 */
+.code-block-wrapper [data-line].line-added {
+    background-color: rgba(34, 197, 94, 0.15) !important;
+}
+
+.code-block-wrapper [data-line].line-added::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background-color: rgb(34, 197, 94);
+}
+
+.code-block-wrapper [data-line].line-added > .diff-symbol {
+    color: rgb(34, 197, 94) !important;
+}
+
+/* 삭제된 줄 스타일 */
+.code-block-wrapper [data-line].line-removed {
+    background-color: rgba(239, 68, 68, 0.15) !important;
+}
+
+.code-block-wrapper [data-line].line-removed::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background-color: rgb(239, 68, 68);
+}
+
+.code-block-wrapper [data-line].line-removed > .diff-symbol {
+    color: rgb(239, 68, 68) !important;
+}
+
+/* 하이라이트된 줄 스타일 */
+.code-block-wrapper [data-line].line-highlight {
+    background-color: transparent !important;
+    border-left: none !important;
+    position: relative;
+}
+
+.code-block-wrapper [data-line].line-highlight::before {
+    display: none;
+}
+
+.code-block-wrapper [data-line].line-highlight::after {
+    display: none;
+}
+
+/* 하이라이트 블록 (연속된 줄들) */
+.code-block-wrapper .highlight-block {
+    display: inline-block;
+    border: 2px solid rgb(236, 72, 153);
+    border-radius: 4px;
+    padding: 0 4px;
+    margin: -2px 0;
+    background-color: transparent;
+}
+
+/* 그룹의 일부인 하이라이트 블록 */
+.code-block-wrapper .highlight-block-group {
+    border-radius: 0;
+    border-left: 2px solid rgb(236, 72, 153);
+    border-right: 2px solid rgb(236, 72, 153);
+    border-top: none;
+    border-bottom: none;
+}
+
+/* 그룹의 첫 번째 블록 */
+.code-block-wrapper .highlight-block-first {
+    border-top: 2px solid rgb(236, 72, 153);
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+
+/* 그룹의 마지막 블록 */
+.code-block-wrapper .highlight-block-last {
+    border-bottom: 2px solid rgb(236, 72, 153);
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+/* 단어 하이라이트 스타일 */
+.code-block-wrapper mark.code-word-highlight {
+    background-color: transparent;
+    border: 2px solid rgb(236, 72, 153);
+    border-radius: 4px;
+    padding: 1px 4px;
+    color: inherit;
+    font-weight: 600;
+}
+
+/* 코드 블록 푸터 */
+.code-block-footer {
+    background: rgba(17, 24, 39, 0.8);
+    padding: 0.5rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+.code-language {
+    font-size: 0.75rem;
+    color: rgb(156, 163, 175);
+    font-weight: 600;
+    font-family: "D2Coding", monospace;
+}
+
+.code-copy-button {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.75rem;
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 0.375rem;
+    color: rgb(147, 197, 253);
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.code-copy-button:hover {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: rgba(59, 130, 246, 0.5);
+}
+
+.code-copy-button svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* 코드 블록 */
+.prose pre {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 1.25rem 0;
+    overflow-x: auto;
+    margin: 0;
+    box-shadow: none;
+}
+
+.prose pre code {
+    background-color: transparent;
+    padding: 0;
+    color: rgb(229, 231, 235);
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.7;
+    font-family: "D2Coding", monospace;
+    display: block;
+}
+
+/* Syntax highlighting */
+.prose pre code span {
+    font-family: "D2Coding", monospace;
+}
+
+/* rehype-pretty-code 스타일 */
+.prose figure[data-rehype-pretty-code-figure] {
+    margin: 0;
+    background: transparent;
+}
+
+.prose figure[data-rehype-pretty-code-figure] pre {
+    margin: 0;
+    background: transparent;
+}
+
+/* 리스트 */
+.prose ul {
+    list-style-type: disc;
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+    padding-left: 0.5rem;
+}
+
+.prose ol {
+    list-style-type: decimal;
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+    padding-left: 0.5rem;
+}
+
+.prose ul ul {
+    list-style-type: circle;
+}
+
+.prose li {
+    margin-bottom: 0.5rem;
+    color: rgb(55, 65, 81);
+    display: list-item;
+}
+
+.prose li::marker {
+    color: rgb(17, 24, 39);
+    font-weight: bold;
+}
+
+/* 체크리스트 */
+.prose li:has(input[type="checkbox"]) {
+    list-style-type: none;
+    margin-left: -1.5rem;
+}
+
+.prose input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    margin-right: 0.5rem;
+    width: 1.125rem;
+    height: 1.125rem;
+    border: 2px solid rgb(209, 213, 219);
+    border-radius: 0.25rem;
+    cursor: pointer;
+    position: relative;
+    background-color: white;
+    transition: all 0.2s;
+}
+
+.prose input[type="checkbox"]:checked {
+    background-color: rgb(236, 72, 153);
+    border-color: rgb(236, 72, 153);
+}
+
+.prose input[type="checkbox"]:checked::after {
+    content: "✓";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 0.875rem;
+    font-weight: bold;
+}
+
+/* 인용문 */
+.prose blockquote {
+    border-left: 4px solid rgb(59, 130, 246);
+    background-color: rgba(59, 130, 246, 0.08);
+    padding: 1rem;
+    border-radius: 0 0.5rem 0.5rem 0;
+    font-style: italic;
+    color: rgb(75, 85, 99);
+    margin: 1rem 0;
+}
+
+.prose blockquote p {
+    margin: 0;
+    color: rgb(75, 85, 99);
+}
+
+.prose blockquote p + p {
+    margin-top: 0.5rem;
+}
+
+/* 이미지 */
+.prose img {
+    border-radius: 0.75rem;
+    margin: 1.5rem 0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* 구분선 */
+.prose hr {
+    border: 0;
+    height: 2px;
+    background: linear-gradient(
+        to right,
+        transparent,
+        rgb(59, 130, 246),
+        transparent
+    );
+    margin: 2.5rem 0;
+    opacity: 0.5;
+}
+
+/* 표 */
+.prose table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+}
+
+.prose thead {
+    background: linear-gradient(
+        135deg,
+        rgba(251, 207, 232, 0.5),
+        rgba(252, 231, 243, 0.7)
+    );
+}
+
+.prose th {
+    color: rgb(136, 19, 55);
+    font-weight: 700;
+    padding: 0.875rem 1rem;
+    border: 1px solid rgba(236, 72, 153, 0.1);
+    text-align: left;
+}
+
+.prose tbody tr {
+    transition: background-color 0.2s;
+}
+
+.prose tbody tr:hover {
+    background-color: rgba(251, 207, 232, 0.1);
+}
+
+.prose tbody tr:nth-child(even) {
+    background-color: rgba(249, 250, 251, 0.3);
+}
+
+.prose td {
+    padding: 0.75rem 1rem;
+    border: 1px solid rgba(229, 231, 235, 0.5);
+    color: rgb(55, 65, 81);
+}
