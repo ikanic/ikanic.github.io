@@ -29,12 +29,11 @@ export interface PostData {
 // 날짜 포맷 파싱 (2026-01-08(목) 00:01:32.000 -> 2026-01-08)
 function parseDate(dateStr: string): string {
     if (!dateStr) return new Date().toISOString().split("T")[0];
-    // "2026-01-08(목) 00:01:32.000" 형식에서 날짜만 추출
     const match = dateStr.match(/(\d{4}-\d{2}-\d{2})/);
     return match ? match[1] : dateStr;
 }
 
-// 정렬용 날짜 가져오기 (modifiedDate가 있으면 그걸 사용, 없으면 createdDate)
+// 정렬용 날짜 가져오기
 function getSortDate(post: PostData): string {
     return post.modifiedDate || post.createdDate;
 }
@@ -73,7 +72,6 @@ export function getAllPosts(): PostData[] {
                 } as PostData;
             });
 
-        // modifiedDate 또는 createdDate 기준으로 정렬
         return allPostsData.sort((a, b) =>
             getSortDate(a) < getSortDate(b) ? 1 : -1,
         );
@@ -90,26 +88,27 @@ export async function getPostBySlug(slug: string): Promise<PostData | null> {
         const fileContents = fs.readFileSync(fullPath, "utf8");
         const { data, content } = matter(fileContents);
 
-        // 모든 코드 블록의 하이라이트 정보를 순서대로 수집
-        const blocks: Array<{ index: number; highlight?: string }> = [];
-        let blockIndex = 0;
+        // 1단계: 마크다운에서 각 코드 블록에 고유 ID 부여
+        let blockId = 0;
+        const blockMeta = new Map<string, string>(); // block-id -> highlight meta
 
-        content.replace(/```(\w+)([^\n]*)/g, (match, lang, rest) => {
-            // {highlight} 형식 찾기
-            const highlightMatch = rest.match(/\s+\{([^}]+)\}/);
-            blocks.push({
-                index: blockIndex++,
-                highlight: highlightMatch ? highlightMatch[1] : undefined,
-            });
-            return match;
-        });
-
-        console.log("Found", blockIndex, "code blocks");
-        console.log(
-            "Blocks:",
-            blocks.map((b, i) => `${i}: ${b.highlight || "none"}`).join(", "),
+        const contentWithIds = content.replace(
+            /```(\w+)(?:\s+\{([^}]+)\})?/g,
+            (match, lang, highlight) => {
+                const id = `cb${blockId++}`;
+                if (highlight) {
+                    blockMeta.set(id, highlight);
+                }
+                // 주석으로 ID 삽입 (HTML 주석은 rehype에서 유지됨)
+                return `<!-- ${id} -->\n\`\`\`${lang}`;
+            },
         );
 
+        console.log(
+            `[${slug}] Blocks: ${blockId}, Highlights: ${blockMeta.size}`,
+        );
+
+        // 2단계: 마크다운 -> HTML 변환
         // @ts-ignore
         const processedContent = await unified()
             .use(remarkParse)
@@ -123,22 +122,26 @@ export async function getPostBySlug(slug: string): Promise<PostData | null> {
             })
             // @ts-ignore
             .use(rehypeStringify, { allowDangerousHtml: true })
-            .process(content);
+            .process(contentWithIds);
 
         let contentHtml = processedContent.toString();
 
-        // 모든 <pre> 태그에 순서대로 메타 정보 적용
-        let preIndex = 0;
-        contentHtml = contentHtml.replace(/<pre([^>]*)>/g, (match, attrs) => {
-            const block = blocks[preIndex++];
-            if (block && block.highlight) {
-                console.log(
-                    `Applying highlight to pre ${block.index}: ${block.highlight}`,
-                );
-                return `<pre${attrs} data-highlight-meta="${block.highlight}">`;
-            }
-            return match;
-        });
+        // 3단계: HTML에서 주석 찾아서 해당 <pre>에 메타 정보 추가
+        contentHtml = contentHtml.replace(
+            /<!--\s*(cb\d+)\s*-->\s*<figure[^>]*>[\s\S]*?<pre/g,
+            (match, id) => {
+                const meta = blockMeta.get(id);
+                if (meta) {
+                    console.log(`  Matched ${id} -> highlight: ${meta}`);
+                    // <pre에 data-highlight-meta 추가
+                    return match.replace(
+                        /<pre/,
+                        `<pre data-highlight-meta="${meta}"`,
+                    );
+                }
+                return match;
+            },
+        );
 
         return {
             slug,
@@ -219,7 +222,7 @@ export function extractTOC(htmlContent: string): {
 
     while ((match = headingRegex.exec(htmlContent)) !== null) {
         const level = parseInt(match[1]);
-        const text = match[2].replace(/<[^>]*>/g, ""); // HTML 태그 제거
+        const text = match[2].replace(/<[^>]*>/g, "");
         const id = text
             .toLowerCase()
             .replace(/\s+/g, "-")

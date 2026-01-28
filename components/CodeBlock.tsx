@@ -79,131 +79,29 @@ export default function CodeBlockEnhancer() {
                 console.log("Highlight groups:", highlightGroups);
 
                 if (lines.length > 0) {
+                    // 1단계: 줄 번호와 diff 기호만 먼저 처리
                     lines.forEach((line) => {
                         const lineElement = line as HTMLElement;
 
                         // 이미 처리되었는지 확인
-                        if (lineElement.hasAttribute("data-processed")) return;
-                        lineElement.setAttribute("data-processed", "true");
-
-                        // rehype-pretty-code가 추가한 data-highlighted-line을 클래스로 변환
-                        if (lineElement.hasAttribute("data-highlighted-line")) {
-                            lineElement.classList.add("line-highlight");
-                        }
-
-                        // 단어 하이라이트 처리 (`word` 형식, \` 이스케이프 지원)
-                        const walker = document.createTreeWalker(
-                            lineElement,
-                            NodeFilter.SHOW_TEXT,
-                            null,
-                        );
-
-                        const textNodes: Text[] = [];
-                        let node;
-                        while ((node = walker.nextNode())) {
-                            textNodes.push(node as Text);
-                        }
-
-                        textNodes.forEach((textNode) => {
-                            const text = textNode.textContent || "";
-                            // `word` 패턴 찾기, \` 이스케이프 제외
-                            const regex = /(?<!\\)`([^`]+)`/g;
-
-                            if (regex.test(text)) {
-                                regex.lastIndex = 0;
-                                const fragment =
-                                    document.createDocumentFragment();
-                                let lastIndex = 0;
-                                let match;
-
-                                // 먼저 \` 이스케이프 처리
-                                let processedText = text;
-                                const escapedBackticks: {
-                                    index: number;
-                                    char: string;
-                                }[] = [];
-
-                                // \` 위치 저장
-                                for (
-                                    let i = 0;
-                                    i < processedText.length - 1;
-                                    i++
-                                ) {
-                                    if (
-                                        processedText[i] === "\\" &&
-                                        processedText[i + 1] === "`"
-                                    ) {
-                                        escapedBackticks.push({
-                                            index: lastIndex + i,
-                                            char: "`",
-                                        });
-                                    }
-                                }
-
-                                while ((match = regex.exec(text)) !== null) {
-                                    // 하이라이트 전 텍스트
-                                    if (match.index > lastIndex) {
-                                        let beforeText = text.substring(
-                                            lastIndex,
-                                            match.index,
-                                        );
-                                        beforeText = beforeText.replace(
-                                            /\\`/g,
-                                            "`",
-                                        );
-                                        fragment.appendChild(
-                                            document.createTextNode(beforeText),
-                                        );
-                                    }
-
-                                    // 하이라이트된 단어
-                                    const highlight =
-                                        document.createElement("mark");
-                                    highlight.className = "code-word-highlight";
-                                    highlight.textContent = match[1];
-                                    fragment.appendChild(highlight);
-
-                                    lastIndex = match.index + match[0].length;
-                                }
-
-                                // 나머지 텍스트
-                                if (lastIndex < text.length) {
-                                    let afterText = text.substring(lastIndex);
-                                    afterText = afterText.replace(/\\`/g, "`");
-                                    fragment.appendChild(
-                                        document.createTextNode(afterText),
-                                    );
-                                }
-
-                                textNode.parentNode?.replaceChild(
-                                    fragment,
-                                    textNode,
-                                );
-                            } else {
-                                // \` 이스케이프만 처리
-                                if (text.includes("\\`")) {
-                                    const newText = text.replace(/\\`/g, "`");
-                                    textNode.textContent = newText;
-                                }
-                            }
-                        });
+                        if (lineElement.hasAttribute("data-num-processed"))
+                            return;
+                        lineElement.setAttribute("data-num-processed", "true");
 
                         // 이미 줄 번호가 있는지 확인
                         let existingLineNumber =
                             lineElement.querySelector(".line-number");
 
-                        // diff 스타일 감지 (+ 또는 - 로 시작하고 그 뒤에 공백이 있거나 아무것도 없음)
+                        // diff 스타일 감지
                         const textContent = lineElement.textContent || "";
                         let lineClass = "";
                         let diffSymbol = "";
 
-                        // + 또는 - 뒤에 공백이 있거나 바로 끝나는 경우만 diff로 인식
                         if (/^\+( |$)/.test(textContent)) {
                             lineClass = "line-added";
                             diffSymbol = "+";
                             lineElement.classList.add(lineClass);
 
-                            // 첫 번째 텍스트 노드 찾아서 + 제거
                             const walker = document.createTreeWalker(
                                 lineElement,
                                 NodeFilter.SHOW_TEXT,
@@ -222,7 +120,6 @@ export default function CodeBlockEnhancer() {
                             diffSymbol = "-";
                             lineElement.classList.add(lineClass);
 
-                            // 첫 번째 텍스트 노드 찾아서 - 제거
                             const walker = document.createTreeWalker(
                                 lineElement,
                                 NodeFilter.SHOW_TEXT,
@@ -242,14 +139,12 @@ export default function CodeBlockEnhancer() {
                         if (existingLineNumber) {
                             existingLineNumber.textContent =
                                 String(actualLineNumber);
-                            // 인라인 스타일 강제 적용
                             (existingLineNumber as HTMLElement).style.cssText =
                                 "display: inline-block !important; position: absolute !important; left: 0.5rem !important; top: 0 !important; width: 2rem !important; text-align: right !important; color: rgb(75, 85, 99) !important; font-size: 0.875rem !important; line-height: 1.7 !important; margin: 0 !important; padding: 0 !important;";
                         } else {
                             const lineNumber = document.createElement("span");
                             lineNumber.className = "line-number";
                             lineNumber.textContent = String(actualLineNumber);
-                            // 인라인 스타일 강제 적용
                             lineNumber.style.cssText =
                                 "display: inline-block !important; position: absolute !important; left: 0.5rem !important; top: 0 !important; width: 2rem !important; text-align: right !important; color: rgb(75, 85, 99) !important; font-size: 0.875rem !important; line-height: 1.7 !important; margin: 0 !important; padding: 0 !important;";
                             lineElement.insertBefore(
@@ -282,7 +177,82 @@ export default function CodeBlockEnhancer() {
                         }
                     });
 
-                    // 줄 하이라이트 처리
+                    // 2단계: 단어 하이라이트 처리 (줄 하이라이트 전에!)
+                    lines.forEach((line) => {
+                        const lineElement = line as HTMLElement;
+
+                        if (lineElement.hasAttribute("data-word-processed"))
+                            return;
+                        lineElement.setAttribute("data-word-processed", "true");
+
+                        // 모든 span 요소를 순회하면서 백틱 패턴 처리
+                        const allSpans = lineElement.querySelectorAll("span");
+
+                        allSpans.forEach((span) => {
+                            // 줄번호나 diff기호는 스킵
+                            if (
+                                span.classList.contains("line-number") ||
+                                span.classList.contains("diff-symbol")
+                            ) {
+                                return;
+                            }
+
+                            // 이 span의 텍스트 노드들만 처리
+                            const childNodes = Array.from(span.childNodes);
+                            childNodes.forEach((node) => {
+                                if (node.nodeType !== Node.TEXT_NODE) return;
+
+                                const textNode = node as Text;
+                                const text = textNode.textContent || "";
+                                const regex = /`([^`]+)`/g;
+
+                                if (regex.test(text)) {
+                                    regex.lastIndex = 0;
+                                    const fragment =
+                                        document.createDocumentFragment();
+                                    let lastIndex = 0;
+                                    let match;
+
+                                    while (
+                                        (match = regex.exec(text)) !== null
+                                    ) {
+                                        if (match.index > lastIndex) {
+                                            fragment.appendChild(
+                                                document.createTextNode(
+                                                    text.substring(
+                                                        lastIndex,
+                                                        match.index,
+                                                    ),
+                                                ),
+                                            );
+                                        }
+
+                                        const highlight =
+                                            document.createElement("mark");
+                                        highlight.className =
+                                            "code-word-highlight";
+                                        highlight.textContent = match[1];
+                                        fragment.appendChild(highlight);
+
+                                        lastIndex =
+                                            match.index + match[0].length;
+                                    }
+
+                                    if (lastIndex < text.length) {
+                                        fragment.appendChild(
+                                            document.createTextNode(
+                                                text.substring(lastIndex),
+                                            ),
+                                        );
+                                    }
+
+                                    span.replaceChild(fragment, textNode);
+                                }
+                            });
+                        });
+                    });
+
+                    // 3단계: 줄 하이라이트 처리 (앞 공백 분리)
                     console.log(
                         "Processing highlight groups:",
                         highlightGroups.length,
@@ -301,7 +271,6 @@ export default function CodeBlockEnhancer() {
                                 linesToHighlight.push(lineElement);
                             }
 
-                            // 다음 줄 번호 계산
                             const nextLine = lineElement.nextElementSibling;
                             const nextText = nextLine?.textContent || "";
                             if (!/^\+( |$)/.test(nextText)) {
@@ -313,8 +282,8 @@ export default function CodeBlockEnhancer() {
                             `Group ${group}: Found ${linesToHighlight.length} lines`,
                         );
 
-                        // 그룹이 1개 줄이면 개별적으로 처리
                         if (linesToHighlight.length === 1) {
+                            // 단일 줄
                             const lineElement = linesToHighlight[0];
 
                             if (lineElement.querySelector(".highlight-block"))
@@ -325,6 +294,7 @@ export default function CodeBlockEnhancer() {
                             const diffSymbol =
                                 lineElement.querySelector(".diff-symbol");
 
+                            // 줄번호/diff기호 제외한 모든 노드 수집
                             const contentNodes: ChildNode[] = [];
                             Array.from(lineElement.childNodes).forEach(
                                 (node) => {
@@ -339,15 +309,70 @@ export default function CodeBlockEnhancer() {
 
                             if (contentNodes.length === 0) return;
 
+                            // 앞 공백 노드와 실제 콘텐츠 분리
+                            const whitespaceNodes: ChildNode[] = [];
+                            const realContentNodes: ChildNode[] = [];
+                            let foundNonWhitespace = false;
+
+                            contentNodes.forEach((node) => {
+                                if (
+                                    !foundNonWhitespace &&
+                                    node.nodeType === Node.TEXT_NODE
+                                ) {
+                                    const text = node.textContent || "";
+                                    if (/^\s+$/.test(text)) {
+                                        // 순수 공백만
+                                        whitespaceNodes.push(node);
+                                        return;
+                                    } else if (/^\s/.test(text)) {
+                                        // 앞에 공백이 있는 경우 분리
+                                        const match = text.match(/^(\s+)(.*)$/);
+                                        if (match) {
+                                            const wsNode =
+                                                document.createTextNode(
+                                                    match[1],
+                                                );
+                                            whitespaceNodes.push(wsNode);
+                                            const contentNode =
+                                                document.createTextNode(
+                                                    match[2],
+                                                );
+                                            realContentNodes.push(contentNode);
+                                            foundNonWhitespace = true;
+                                            return;
+                                        }
+                                    }
+                                }
+                                foundNonWhitespace = true;
+                                realContentNodes.push(node);
+                            });
+
+                            // 하이라이트 블록 생성 (실제 콘텐츠만)
                             const highlightBlock =
                                 document.createElement("span");
                             highlightBlock.className = "highlight-block";
-                            contentNodes.forEach((node) =>
+
+                            // 기존 노드 제거
+                            contentNodes.forEach((node) => {
+                                if (node.parentNode === lineElement) {
+                                    lineElement.removeChild(node);
+                                }
+                            });
+
+                            // 앞 공백 먼저 추가
+                            whitespaceNodes.forEach((node) =>
+                                lineElement.appendChild(node),
+                            );
+
+                            // 실제 콘텐츠를 하이라이트 블록에
+                            realContentNodes.forEach((node) =>
                                 highlightBlock.appendChild(node),
                             );
+
+                            // 하이라이트 블록 추가
                             lineElement.appendChild(highlightBlock);
                         } else {
-                            // 그룹이 여러 줄이면 하나의 큰 블록으로 처리
+                            // 여러 줄 - 그룹으로 처리
                             linesToHighlight.forEach((lineElement, idx) => {
                                 if (
                                     lineElement.querySelector(
@@ -375,6 +400,45 @@ export default function CodeBlockEnhancer() {
 
                                 if (contentNodes.length === 0) return;
 
+                                // 앞 공백 분리
+                                const whitespaceNodes: ChildNode[] = [];
+                                const realContentNodes: ChildNode[] = [];
+                                let foundNonWhitespace = false;
+
+                                contentNodes.forEach((node) => {
+                                    if (
+                                        !foundNonWhitespace &&
+                                        node.nodeType === Node.TEXT_NODE
+                                    ) {
+                                        const text = node.textContent || "";
+                                        if (/^\s+$/.test(text)) {
+                                            whitespaceNodes.push(node);
+                                            return;
+                                        } else if (/^\s/.test(text)) {
+                                            const match =
+                                                text.match(/^(\s+)(.*)$/);
+                                            if (match) {
+                                                const wsNode =
+                                                    document.createTextNode(
+                                                        match[1],
+                                                    );
+                                                whitespaceNodes.push(wsNode);
+                                                const contentNode =
+                                                    document.createTextNode(
+                                                        match[2],
+                                                    );
+                                                realContentNodes.push(
+                                                    contentNode,
+                                                );
+                                                foundNonWhitespace = true;
+                                                return;
+                                            }
+                                        }
+                                    }
+                                    foundNonWhitespace = true;
+                                    realContentNodes.push(node);
+                                });
+
                                 const highlightBlock =
                                     document.createElement("span");
                                 highlightBlock.className =
@@ -389,9 +453,23 @@ export default function CodeBlockEnhancer() {
                                         "highlight-block-last",
                                     );
 
-                                contentNodes.forEach((node) =>
+                                // 기존 노드 제거
+                                contentNodes.forEach((node) => {
+                                    if (node.parentNode === lineElement) {
+                                        lineElement.removeChild(node);
+                                    }
+                                });
+
+                                // 앞 공백 먼저
+                                whitespaceNodes.forEach((node) =>
+                                    lineElement.appendChild(node),
+                                );
+
+                                // 콘텐츠를 하이라이트 블록에
+                                realContentNodes.forEach((node) =>
                                     highlightBlock.appendChild(node),
                                 );
+
                                 lineElement.appendChild(highlightBlock);
                             });
                         }
@@ -402,7 +480,6 @@ export default function CodeBlockEnhancer() {
                 const header = document.createElement("div");
                 header.className = "code-block-header";
 
-                // 맥북 버튼들
                 const buttons = document.createElement("div");
                 buttons.className = "mac-buttons";
                 buttons.innerHTML = `
@@ -413,7 +490,6 @@ export default function CodeBlockEnhancer() {
 
                 header.appendChild(buttons);
 
-                // 타이틀 (있을 경우)
                 if (title) {
                     const titleDiv = document.createElement("div");
                     titleDiv.className = "code-title";
@@ -421,7 +497,7 @@ export default function CodeBlockEnhancer() {
                     header.appendChild(titleDiv);
                 }
 
-                // 푸터 생성 (언어 + 복사 버튼)
+                // 푸터 생성
                 const footer = document.createElement("div");
                 footer.className = "code-block-footer";
 
@@ -440,7 +516,6 @@ export default function CodeBlockEnhancer() {
         `;
 
                 copyBtn.addEventListener("click", async () => {
-                    // 줄 번호와 diff 기호 제외하고 텍스트만 복사
                     const lines = code.querySelectorAll(
                         "[data-line], .code-line",
                     );
@@ -496,13 +571,11 @@ export default function CodeBlockEnhancer() {
                 const wrapper = document.createElement("div");
                 wrapper.className = "code-block-wrapper";
 
-                // figure를 wrapper로 감싸기
                 figure.parentNode?.insertBefore(wrapper, figure);
                 wrapper.appendChild(header);
                 wrapper.appendChild(figure);
                 wrapper.appendChild(footer);
 
-                // figure 스타일 정리
                 if (figure instanceof HTMLElement) {
                     figure.style.margin = "0";
                     figure.style.padding = "0";
