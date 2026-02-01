@@ -1,47 +1,33 @@
-import { ExternalLink, Github } from "lucide-react";
+import { ExternalLink, Github, Play, Smartphone, FileText } from "lucide-react";
+import { projectConfig, contactInfo } from "@/config/config";
+import Link from "next/link";
 
-// 프로젝트 데이터 (나중에 별도 파일로 분리 가능)
-const projects = [
-    {
-        id: 1,
-        title: "GitHub Pages Blog",
-        description:
-            "Next.js와 Tailwind CSS를 사용한 정적 블로그. 글래스모피즘 디자인과 시리즈 기능을 구현했습니다.",
-        tags: ["Next.js", "Tailwind CSS", "GitHub Pages"],
-        image: "🌐",
-        links: {
-            demo: "#",
-            github: "#",
+// 링크 타입별 아이콘과 스타일
+const getLinkConfig = (type: string) => {
+    const configs: Record<string, { icon: any; color: string }> = {
+        project: {
+            icon: FileText,
+            color: "bg-indigo-500/20 hover:bg-indigo-500/30 border-indigo-400/40 text-indigo-700",
         },
-        period: "2024.01",
-    },
-    {
-        id: 2,
-        title: "Sample Project 1",
-        description:
-            "프로젝트 설명이 들어갈 자리입니다. 프로젝트의 주요 기능과 사용한 기술 스택을 간단히 소개합니다.",
-        tags: ["React", "TypeScript", "Node.js"],
-        image: "🚀",
-        links: {
-            demo: "#",
-            github: "#",
+        demo: {
+            icon: ExternalLink,
+            color: "bg-blue-500/20 hover:bg-blue-500/30 border-blue-400/40 text-blue-700",
         },
-        period: "2023.12",
-    },
-    {
-        id: 3,
-        title: "Sample Project 2",
-        description:
-            "또 다른 프로젝트 설명입니다. 여러분의 멋진 프로젝트를 소개해보세요!",
-        tags: ["Vue.js", "Firebase", "Vuetify"],
-        image: "💡",
-        links: {
-            demo: "#",
-            github: "#",
+        github: {
+            icon: Github,
+            color: "bg-gray-500/20 hover:bg-gray-500/30 border-gray-400/40 text-gray-700",
         },
-        period: "2023.11",
-    },
-];
+        appstore: {
+            icon: Smartphone,
+            color: "bg-purple-500/20 hover:bg-purple-500/30 border-purple-400/40 text-purple-700",
+        },
+        video: {
+            icon: Play,
+            color: "bg-red-500/20 hover:bg-red-500/30 border-red-400/40 text-red-700",
+        },
+    };
+    return configs[type] || configs.demo;
+};
 
 export default function ProjectPage() {
     return (
@@ -50,17 +36,17 @@ export default function ProjectPage() {
             <div className="mb-12 text-center">
                 <div className="backdrop-blur-2xl bg-white/40 border border-white/60 rounded-3xl p-12 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)]">
                     <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                        Projects
+                        {projectConfig.header.title}
                     </h1>
                     <p className="text-xl text-gray-700">
-                        지금까지 진행한 프로젝트들을 소개합니다
+                        {projectConfig.header.description}
                     </p>
                 </div>
             </div>
 
             {/* 프로젝트 그리드 */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {projects.map((project) => (
+                {projectConfig.projects.map((project) => (
                     <div
                         key={project.id}
                         className="backdrop-blur-2xl bg-white/40 border border-white/60 rounded-2xl p-6 hover:bg-white/60 hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.2)] transition-all duration-300 hover:scale-[1.02] group"
@@ -95,23 +81,43 @@ export default function ProjectPage() {
                             ))}
                         </div>
 
-                        {/* 링크 */}
-                        <div className="flex gap-3">
-                            <a
-                                href={project.links.demo}
-                                className="flex items-center gap-1 px-4 py-2 backdrop-blur-xl bg-blue-500/20 hover:bg-blue-500/30 border border-blue-400/40 rounded-lg text-sm text-blue-700 font-medium transition-all"
-                            >
-                                <ExternalLink size={16} />
-                                Demo
-                            </a>
-                            <a
-                                href={project.links.github}
-                                className="flex items-center gap-1 px-4 py-2 backdrop-blur-xl bg-gray-500/20 hover:bg-gray-500/30 border border-gray-400/40 rounded-lg text-sm text-gray-700 font-medium transition-all"
-                            >
-                                <Github size={16} />
-                                Code
-                            </a>
-                        </div>
+                        {/* 링크 - 있는 것만 표시 */}
+                        {project.links.length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                                {project.links.map((link, index) => {
+                                    const config = getLinkConfig(link.type);
+                                    const Icon = config.icon;
+
+                                    // project 타입은 내부 링크
+                                    if (link.type === "project") {
+                                        return (
+                                            <Link
+                                                key={index}
+                                                href={link.url}
+                                                className={`flex items-center gap-1 px-3 py-2 backdrop-blur-xl border rounded-lg text-sm font-medium transition-all ${config.color}`}
+                                            >
+                                                <Icon size={16} />
+                                                {link.label}
+                                            </Link>
+                                        );
+                                    }
+
+                                    // 나머지는 외부 링크
+                                    return (
+                                        <a
+                                            key={index}
+                                            href={link.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className={`flex items-center gap-1 px-3 py-2 backdrop-blur-xl border rounded-lg text-sm font-medium transition-all ${config.color}`}
+                                        >
+                                            <Icon size={16} />
+                                            {link.label}
+                                        </a>
+                                    );
+                                })}
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>
@@ -120,10 +126,10 @@ export default function ProjectPage() {
             <div className="mt-12 text-center">
                 <div className="backdrop-blur-2xl bg-white/40 border border-white/60 rounded-2xl p-8 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)]">
                     <p className="text-gray-700 mb-4">
-                        더 많은 프로젝트는 GitHub에서 확인하실 수 있습니다
+                        {projectConfig.footerMessage}
                     </p>
                     <a
-                        href="https://github.com"
+                        href={contactInfo.github}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 px-6 py-3 backdrop-blur-xl bg-gray-900/80 hover:bg-gray-900 text-white rounded-xl font-medium transition-all hover:scale-105"

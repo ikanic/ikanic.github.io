@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/Navigation";
+import { siteConfig } from "@/config/config";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "My Blog",
-    description: "A personal blog built with Next.js and Tailwind CSS",
+    title: siteConfig.title,
+    description: siteConfig.description,
 };
 
 export default function RootLayout({
@@ -30,12 +31,14 @@ export default function RootLayout({
 
                 <Navigation />
 
-                <main className="min-h-screen pt-24 pb-16">{children}</main>
+                <main className="min-h-screen pt-24 pb-16 px-4 sm:px-6">
+                    <div className="max-w-7xl mx-auto">{children}</div>
+                </main>
 
                 {/* 푸터 */}
                 <footer className="border-t border-gray-200/50 backdrop-blur-2xl bg-white/40">
-                    <div className="max-w-7xl mx-auto px-6 py-8 text-center text-gray-600 text-sm">
-                        © 2024 MyBlog. Built with Next.js & Tailwind CSS
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 text-center text-gray-600 text-sm">
+                        {siteConfig.copyright}
                     </div>
                 </footer>
             </body>

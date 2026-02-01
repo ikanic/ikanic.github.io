@@ -18,9 +18,9 @@ export default function PostCard({ post }: PostCardProps) {
     return (
         <Link href={`/blog/${post.slug}`}>
             <article className="group backdrop-blur-2xl bg-white/40 border border-white/60 rounded-2xl overflow-hidden hover:bg-white/60 hover:border-white/80 hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.2)] transition-all duration-300 hover:scale-[1.02]">
-                {/* 썸네일 이미지 */}
+                {/* 썸네일 이미지 - 16:9 비율 */}
                 {post.thumbnail && (
-                    <div className="relative w-full h-48 overflow-hidden">
+                    <div className="relative w-full aspect-video overflow-hidden">
                         <Image
                             src={post.thumbnail}
                             alt={post.title}

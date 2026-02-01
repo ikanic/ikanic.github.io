@@ -232,7 +232,7 @@ samp,
     counter-reset: line;
 }
 
-/* 모든 줄에 동일한 패딩 적용 */
+/* 모든 줄에 기본 패딩 (하이라이트 없는 줄과 정렬) */
 .code-block-wrapper [data-line] {
     display: block !important;
     padding-left: 4.5rem !important;
@@ -241,6 +241,12 @@ samp,
     padding-bottom: 0 !important;
     position: relative !important;
     line-height: 1.7 !important;
+}
+
+/* 하이라이트 블록이 있는 줄은 패딩 조정 */
+.code-block-wrapper [data-line]:has(.highlight-block),
+.code-block-wrapper [data-line]:has(.highlight-block-group) {
+    padding-left: calc(4.5rem - 4px) !important;
 }
 
 /* 줄 번호 - 모든 경우에 동일한 위치 */
@@ -337,8 +343,12 @@ samp,
     background-color: transparent;
 }
 
-/* 그룹의 일부인 하이라이트 블록 */
+/* 그룹의 일부인 하이라이트 블록 - CSS 변수로 너비 설정 */
 .code-block-wrapper .highlight-block-group {
+    display: inline-block;
+    width: var(--box-width, auto);
+    padding-left: 4px;
+    box-sizing: content-box;
     border-radius: 0;
     border-left: 2px solid rgb(236, 72, 153);
     border-right: 2px solid rgb(236, 72, 153);
@@ -366,8 +376,8 @@ samp,
     border: 2px solid rgb(236, 72, 153);
     border-radius: 4px;
     padding: 1px 4px;
-    color: inherit;
-    font-weight: 600;
+    font-weight: 400;
+    font-family: "D2Coding", "Courier New", monospace !important;
 }
 
 /* 코드 블록 푸터 */
@@ -557,7 +567,7 @@ samp,
     opacity: 0.5;
 }
 
-/* 표 */
+/* 표 - 모바일 최적화 */
 .prose table {
     width: 100%;
     border-collapse: collapse;
@@ -565,6 +575,27 @@ samp,
     border-radius: 0.5rem;
     overflow: hidden;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.prose table::-webkit-scrollbar {
+    height: 8px;
+}
+
+.prose table::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.prose table::-webkit-scrollbar-thumb {
+    background: rgba(59, 130, 246, 0.3);
+    border-radius: 10px;
+}
+
+.prose table::-webkit-scrollbar-thumb:hover {
+    background: rgba(59, 130, 246, 0.5);
 }
 
 .prose thead {
@@ -581,6 +612,7 @@ samp,
     padding: 0.875rem 1rem;
     border: 1px solid rgba(236, 72, 153, 0.1);
     text-align: left;
+    white-space: nowrap;
 }
 
 .prose tbody tr {
@@ -599,4 +631,18 @@ samp,
     padding: 0.75rem 1rem;
     border: 1px solid rgba(229, 231, 235, 0.5);
     color: rgb(55, 65, 81);
+    white-space: nowrap;
+}
+
+/* 모바일 최적화 */
+@media (max-width: 768px) {
+    .prose table {
+        font-size: 0.875rem;
+    }
+
+    .prose th,
+    .prose td {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+    }
 }

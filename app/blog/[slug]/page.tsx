@@ -8,6 +8,7 @@ import { notFound } from "next/navigation";
 import { format } from "date-fns";
 import { Calendar, Folder, Tag, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import SeriesNav from "@/components/SeriesNav";
 import CodeBlockEnhancer from "@/components/CodeBlock";
 import TableOfContents from "@/components/TableOfContents";
@@ -130,6 +131,21 @@ export default async function PostPage({ params }: PostPageProps) {
                             )}
                         </div>
 
+                        {/* 썸네일 이미지 */}
+                        {post.thumbnail && (
+                            <div className="relative w-full mb-8 rounded-xl overflow-hidden">
+                                <Image
+                                    src={post.thumbnail}
+                                    alt={post.title}
+                                    width={1200}
+                                    height={630}
+                                    className="w-full h-auto"
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 50vw"
+                                    priority
+                                />
+                            </div>
+                        )}
+
                         {/* 포스트 내용 */}
                         <CodeBlockEnhancer />
                         <MermaidDiagram />
@@ -167,12 +183,13 @@ export default async function PostPage({ params }: PostPageProps) {
                                 </h3>
                                 <div className="flex flex-wrap gap-2">
                                     {post.tags.map((tag) => (
-                                        <span
+                                        <Link
                                             key={tag}
-                                            className="px-3 py-1 backdrop-blur-xl bg-white/50 border border-white/60 rounded-full text-sm text-gray-700 hover:bg-white/70 transition-all cursor-pointer"
+                                            href={`/blog?tag=${encodeURIComponent(tag)}`}
+                                            className="px-3 py-1 backdrop-blur-xl bg-white/50 border border-white/60 rounded-full text-sm text-gray-700 hover:bg-white/70 transition-all"
                                         >
                                             #{tag}
-                                        </span>
+                                        </Link>
                                     ))}
                                 </div>
                             </div>

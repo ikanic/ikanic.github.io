@@ -153,6 +153,7 @@ graph TD
         const skills = ["React", "Vue", "Angular"];
         ```
     - 프레임워크 선택
+
 2. **백엔드 개발**
 
     > API 설계가 가장 중요합니다.

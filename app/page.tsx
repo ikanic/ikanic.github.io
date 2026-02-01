@@ -2,6 +2,7 @@ import { getAllPosts } from "@/lib/posts";
 import PostCard from "@/components/PostCard";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { siteConfig, homeConfig } from "@/config/config";
 
 export default function Home() {
     const allPosts = getAllPosts();
@@ -13,10 +14,10 @@ export default function Home() {
             <section className="mb-16 text-center">
                 <div className="backdrop-blur-2xl bg-white/40 border border-white/60 rounded-3xl p-12 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)]">
                     <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                        Welcome to My Blog
+                        {homeConfig.hero.title}
                     </h1>
                     <p className="text-xl text-gray-700 max-w-2xl mx-auto">
-                        개발, 디자인, 그리고 일상의 이야기를 공유합니다
+                        {homeConfig.hero.description}
                     </p>
                 </div>
             </section>
@@ -60,42 +61,21 @@ export default function Home() {
             {/* 소개 섹션 */}
             <section className="mt-16">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <Link
-                        href="/blog"
-                        className="backdrop-blur-2xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-white/60 rounded-2xl p-8 hover:border-blue-400/60 hover:shadow-[0_8px_32px_0_rgba(59,130,246,0.3)] transition-all duration-300 group"
-                    >
-                        <div className="text-4xl mb-4">📝</div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                            Blog
-                        </h3>
-                        <p className="text-gray-700">
-                            개발 관련 글과 학습 내용을 정리합니다
-                        </p>
-                    </Link>
-
-                    <Link
-                        href="/project"
-                        className="backdrop-blur-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-white/60 rounded-2xl p-8 hover:border-purple-400/60 hover:shadow-[0_8px_32px_0_rgba(168,85,247,0.3)] transition-all duration-300 group"
-                    >
-                        <div className="text-4xl mb-4">🚀</div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">
-                            Project
-                        </h3>
-                        <p className="text-gray-700">
-                            진행한 프로젝트들을 소개합니다
-                        </p>
-                    </Link>
-
-                    <Link
-                        href="/about"
-                        className="backdrop-blur-2xl bg-gradient-to-br from-pink-500/20 to-orange-500/20 border border-white/60 rounded-2xl p-8 hover:border-pink-400/60 hover:shadow-[0_8px_32px_0_rgba(236,72,153,0.3)] transition-all duration-300 group"
-                    >
-                        <div className="text-4xl mb-4">👋</div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-pink-600 transition-colors">
-                            About Me
-                        </h3>
-                        <p className="text-gray-700">저에 대해 소개합니다</p>
-                    </Link>
+                    {homeConfig.sections.map((section) => (
+                        <Link
+                            key={section.link}
+                            href={section.link}
+                            className={`backdrop-blur-2xl bg-gradient-to-br ${section.gradient} border border-white/60 rounded-2xl p-8 hover:shadow-[0_8px_32px_0_rgba(59,130,246,0.3)] transition-all duration-300 group`}
+                        >
+                            <div className="text-4xl mb-4">{section.icon}</div>
+                            <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                {section.title}
+                            </h3>
+                            <p className="text-gray-700">
+                                {section.description}
+                            </p>
+                        </Link>
+                    ))}
                 </div>
             </section>
         </div>
