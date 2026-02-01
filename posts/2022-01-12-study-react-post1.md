@@ -10,9 +10,6 @@ description: "Windows 운영체제에서 리액트 개발 환경을 설치하는
 
 # 리액트 개발 환경 설치하기
 
-- Table of Contents
-{:toc .large-only}
-
 ## NVM(node version manager)으로 node.js 설치
 
 ### NVM 설치

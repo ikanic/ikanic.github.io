@@ -2,6 +2,9 @@
 title: "테스트 포스트"
 created-date: "2026-01-27"
 modified-date: "2026-01-27"
+tags: ["test"]
+series: "테스트 시리즈"
+seriesOrder: 1
 description: "하이라이팅 테스트"
 ---
 

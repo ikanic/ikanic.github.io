@@ -59,7 +59,7 @@ export const aboutConfig = {
         title: "안녕하세요!",
         subtitle: "개발을 사랑하는 개발자입니다",
         description:
-            "웹 개발과 새로운 기술을 배우는 것을 좋아합니다. 이 블로그에서는 개발 과정에서 배운 것들과 경험을 공유하고 있습니다.",
+            "iOS 앱 개발과 새로운 기술을 배우는 것을 좋아합니다. 이 블로그에서는 개발 과정에서 배운 것들과 경험을 공유하고 있습니다.",
     },
     // 스킬을 배열로 변경 - 자유롭게 추가/삭제 가능
     skills: [
@@ -75,21 +75,21 @@ export const aboutConfig = {
             title: "Backend",
             icon: "⚙️",
             color: "purple",
-            items: ["Node.js", "Express", "Python", "FastAPI", "PostgreSQL"],
+            items: ["Node.js", "Express", "PostgreSQL"],
         },
         {
             id: 3,
             title: "DevOps & Tools",
             icon: "🛠️",
             color: "green",
-            items: ["Git", "Docker", "AWS", "GitHub Actions", "Vercel"],
+            items: ["Git", "AWS"],
         },
         {
             id: 4,
             title: "Design",
             icon: "🎨",
             color: "pink",
-            items: ["Figma", "Adobe XD", "UI/UX Design"],
+            items: ["Figma"],
         },
     ],
     contactMessage:
@@ -105,67 +105,66 @@ export const projectConfig = {
     projects: [
         {
             id: 1,
-            title: "GitHub Pages Blog",
-            description:
-                "Next.js와 Tailwind CSS를 사용한 정적 블로그. 글래스모피즘 디자인과 시리즈 기능을 구현했습니다.",
-            tags: ["Next.js", "Tailwind CSS", "GitHub Pages"],
+            title: ".",
+            description: ".",
+            tags: ["test-tag"],
             image: "🌐",
             // 링크는 필요한 것만 추가 (없으면 빈 배열)
             links: [
-                { type: "demo", url: "https://example.com", label: "Demo" },
-                { type: "github", url: "https://github.com", label: "GitHub" },
+                { type: "demo", url: "#", label: "Demo" },
+                // { type: "github", url: "https://github.com", label: "GitHub" },
             ],
-            period: "2024.01",
+            period: "2026.02",
         },
-        {
-            id: 2,
-            title: "iOS Sample App",
-            description:
-                "Swift와 SwiftUI를 사용한 iOS 앱입니다. Core Data를 활용한 데이터 관리와 MVVM 아키텍처를 적용했습니다.",
-            tags: ["Swift", "SwiftUI", "iOS"],
-            image: "📱",
-            links: [
-                {
-                    type: "project",
-                    url: "/project/ios-music-app",
-                    label: "Details",
-                }, // 내부 프로젝트 페이지
-                {
-                    type: "appstore",
-                    url: "https://apps.apple.com",
-                    label: "App Store",
-                },
-                {
-                    type: "video",
-                    url: "https://youtube.com",
-                    label: "Demo Video",
-                },
-                { type: "github", url: "https://github.com", label: "GitHub" },
-            ],
-            period: "2023.12",
-        },
-        {
-            id: 3,
-            title: "Sample Project",
-            description: "GitHub 링크만 있는 프로젝트입니다.",
-            tags: ["Vue.js", "Firebase"],
-            image: "💡",
-            links: [
-                { type: "github", url: "https://github.com", label: "GitHub" },
-            ],
-            period: "2023.11",
-        },
-        {
-            id: 4,
-            title: "Private Project",
-            description: "내부 프로젝트 페이지만 있는 프로젝트입니다.",
-            tags: ["React", "TypeScript"],
-            image: "🔒",
-            links: [
-                { type: "project", url: "/project/private", label: "Details" },
-            ],
-            period: "2023.10",
-        },
+        // {
+        //     id: 2,
+        //     title: "iOS Sample App",
+        //     description:
+        //         "Swift와 SwiftUI를 사용한 iOS 앱입니다. Core Data를 활용한 데이터 관리와 MVVM 아키텍처를 적용했습니다.",
+        //     tags: ["Swift", "SwiftUI", "iOS"],
+        //     image: "📱",
+        //     links: [
+        //         {
+        //             type: "project",
+        //             url: "/project/ios-music-app",
+        //             label: "Details",
+        //         }, // 내부 프로젝트 페이지
+        //         {
+        //             type: "appstore",
+        //             url: "https://apps.apple.com",
+        //             label: "App Store",
+        //         },
+        //         {
+        //             type: "video",
+        //             url: "https://youtube.com",
+        //             label: "Demo Video",
+        //         },
+        //         { type: "github", url: "https://github.com", label: "GitHub" },
+        //     ],
+        //     period: "2023.12",
+        // },
+        // {
+        //     id: 3,
+        //     title: "Sample Project",
+        //     description: "GitHub 링크만 있는 프로젝트입니다.",
+        //     tags: ["Vue.js", "Firebase"],
+        //     image: "💡",
+        //     links: [
+        //         { type: "github", url: "https://github.com", label: "GitHub" },
+        //     ],
+        //     period: "2023.11",
+        // },
+        // {
+        //     id: 4,
+        //     title: "Private Project",
+        //     description: "내부 프로젝트 페이지만 있는 프로젝트입니다.",
+        //     tags: ["React", "TypeScript"],
+        //     image: "🔒",
+        //     links: [
+        //         { type: "project", url: "/project/private", label: "Details" },
+        //     ],
+        //     period: "2023.10",
+        // },
     ],
     footerMessage: "더 많은 프로젝트는 GitHub에서 확인하실 수 있습니다",
 };

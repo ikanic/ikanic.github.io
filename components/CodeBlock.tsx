@@ -184,6 +184,9 @@ export default function CodeBlockEnhancer() {
                             return; // 이미 서버에서 처리됨
                         }
 
+                        // 전체 텍스트를 먼저 확인 (이스케이프된 백틱 체크용)
+                        const fullText = lineElement.textContent || "";
+
                         // 모든 span 요소를 순회하면서 백틱 패턴 처리
                         const allSpans = lineElement.querySelectorAll("span");
 
@@ -203,50 +206,78 @@ export default function CodeBlockEnhancer() {
 
                                 const textNode = node as Text;
                                 const text = textNode.textContent || "";
+
+                                // 백틱 패턴 찾기
                                 const regex = /`([^`]+)`/g;
+                                const matches: RegExpExecArray[] = [];
+                                let match;
 
-                                if (regex.test(text)) {
-                                    regex.lastIndex = 0;
-                                    const fragment =
-                                        document.createDocumentFragment();
-                                    let lastIndex = 0;
-                                    let match;
+                                while ((match = regex.exec(text)) !== null) {
+                                    matches.push(match);
+                                }
 
-                                    while (
-                                        (match = regex.exec(text)) !== null
-                                    ) {
-                                        if (match.index > lastIndex) {
-                                            fragment.appendChild(
-                                                document.createTextNode(
-                                                    text.substring(
-                                                        lastIndex,
-                                                        match.index,
-                                                    ),
+                                if (matches.length === 0) return;
+
+                                // 각 매치에 대해 이스케이프 여부 확인
+                                const fragment =
+                                    document.createDocumentFragment();
+                                let lastIndex = 0;
+
+                                matches.forEach((match) => {
+                                    // 이 백틱이 전체 텍스트에서 \`로 이스케이프되었는지 확인
+                                    const beforeMatch = text.substring(
+                                        0,
+                                        match.index,
+                                    );
+                                    const afterMatch = text.substring(
+                                        match.index + match[0].length,
+                                    );
+
+                                    // 백틱 바로 앞에 \가 있는지 확인
+                                    const isEscapedStart =
+                                        beforeMatch.endsWith("\\");
+                                    // 백틱 바로 뒤에 \가 있는지 확인
+                                    const isEscapedEnd =
+                                        afterMatch.startsWith("\\");
+
+                                    if (match.index > lastIndex) {
+                                        fragment.appendChild(
+                                            document.createTextNode(
+                                                text.substring(
+                                                    lastIndex,
+                                                    match.index,
                                                 ),
-                                            );
-                                        }
+                                            ),
+                                        );
+                                    }
 
+                                    // 이스케이프되지 않은 경우에만 하이라이팅
+                                    if (!isEscapedStart && !isEscapedEnd) {
                                         const highlight =
                                             document.createElement("mark");
                                         highlight.className =
                                             "code-word-highlight";
                                         highlight.textContent = match[1];
                                         fragment.appendChild(highlight);
-
-                                        lastIndex =
-                                            match.index + match[0].length;
-                                    }
-
-                                    if (lastIndex < text.length) {
+                                    } else {
+                                        // 이스케이프된 경우 그대로 텍스트로
                                         fragment.appendChild(
-                                            document.createTextNode(
-                                                text.substring(lastIndex),
-                                            ),
+                                            document.createTextNode(match[0]),
                                         );
                                     }
 
-                                    span.replaceChild(fragment, textNode);
+                                    lastIndex = match.index + match[0].length;
+                                });
+
+                                if (lastIndex < text.length) {
+                                    fragment.appendChild(
+                                        document.createTextNode(
+                                            text.substring(lastIndex),
+                                        ),
+                                    );
                                 }
+
+                                span.replaceChild(fragment, textNode);
                             });
                         });
                     });
