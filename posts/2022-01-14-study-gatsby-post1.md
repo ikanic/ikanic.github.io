@@ -41,7 +41,7 @@ CLI는 npm 패키지이므로 npm을 사용하여 설치할 수 있다.
 ║   Gatsby collects anonymous usage analytics                            ║
 ║   to help improve Gatsby for all users.                                ║
 ║                                                                        ║
-║   If you'd like to opt-out, you can use \`gatsby telemetry --disable\`   ║
+║   If you'd like to opt-out, you can use \ㅁ`gatsby telemetry --disable\`   ║
 ║   To learn more, checkout https://gatsby.dev/telemetry                 ║
 ║                                                                        ║
 ╚════════════════════════════════════════════════════════════════════════╝
