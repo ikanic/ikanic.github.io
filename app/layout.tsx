@@ -7,8 +7,58 @@ import { siteConfig } from "@/config/config";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: siteConfig.title,
+    metadataBase: new URL("https://taek0622.github.io"),
+    title: {
+        default: siteConfig.title,
+        template: `%s | ${siteConfig.title}`,
+    },
     description: siteConfig.description,
+    keywords: [
+        "개발 블로그",
+        "프론트엔드",
+        "iOS",
+        "React",
+        "Next.js",
+        "Swift",
+        "SwiftUI",
+        "개발자",
+    ],
+    authors: [{ name: siteConfig.author, url: "https://taek0622.github.io" }],
+    creator: siteConfig.author,
+    openGraph: {
+        type: "website",
+        locale: "ko_KR",
+        url: "https://taek0622.github.io",
+        title: siteConfig.title,
+        description: siteConfig.description,
+        siteName: siteConfig.title,
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: siteConfig.title,
+        description: siteConfig.description,
+        creator: "@shoot_taek_a",
+    },
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+            "max-video-preview": -1,
+            "max-image-preview": "large",
+            "max-snippet": -1,
+        },
+    },
+    alternates: {
+        types: {
+            "application/rss+xml": "https://taek0622.github.io/rss.xml",
+        },
+    },
+    verification: {
+        // Google Search Console 인증 코드 (나중에 추가)
+        // google: 'your-google-verification-code',
+    },
 };
 
 export default function RootLayout({
@@ -18,6 +68,15 @@ export default function RootLayout({
 }) {
     return (
         <html lang="ko">
+            <head>
+                {/* RSS 피드 링크 */}
+                <link
+                    rel="alternate"
+                    type="application/rss+xml"
+                    title={`${siteConfig.title} RSS Feed`}
+                    href="/rss.xml"
+                />
+            </head>
             <body className={inter.className}>
                 {/* 배경 그라디언트 - 밝은 배경 */}
                 <div className="fixed inset-0 -z-10 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50" />
