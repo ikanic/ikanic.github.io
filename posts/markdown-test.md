@@ -1,6 +1,5 @@
 ---
 title: "마크다운 스타일 테스트"
-thumbnail: "https://taek0622.github.io/assets/img/posts/react-logo.png"
 created-date: "2024-01-30"
 modified-date: "2026-01-15"
 category: "Test"
