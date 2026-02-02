@@ -1,54 +1,53 @@
-# Ignore docs files
-_gh_pages
-_site
-_drafts
-.ruby-version
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# Numerous always-ignore extensions
-*.diff
-*.err
-*.orig
-*.log
-*.rej
-*.swo
-*.swp
-*.vi
-*~
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
 
-# OS or Editor folders
-.DS_Store
-._*
-Thumbs.db
-.cache
-.project
-.settings
-.tmproj
-*.esproj
-nbproject
-*.sublime-project
-*.sublime-workspace
-.idea
+# testing
+/coverage
 
-# Komodo
-*.komodoproject
-.komodotools
+# next.js
+/.next/
+/out/
 
-# grunt-html-validation
-validation-status.json
-validation-report.json
-
-# Folders to ignore
-node_modules
-package*.json
-vendor
-.sass-cache
-.jekyll-metadata
-.jekyll-cache
-*.gem
-_zip
-/stats.json
-/dist
+# production
 /build
 
-/assets/js/*hydejack-*
-/_sass/*/__*__/*
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+.env*.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
