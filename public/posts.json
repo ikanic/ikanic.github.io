@@ -1,0 +1,47 @@
+[
+  {
+    "slug": "test-highlight",
+    "title": "테스트 포스트",
+    "description": "하이라이팅 테스트",
+    "tags": [
+      "test"
+    ],
+    "createdDate": "2026-01-27",
+    "modifiedDate": "2026-01-27"
+  },
+  {
+    "slug": "markdown-test",
+    "title": "마크다운 스타일 테스트",
+    "description": "블로그에서 사용 가능한 모든 마크다운 스타일을 테스트합니다.",
+    "category": "Test",
+    "tags": [
+      "Markdown",
+      "Test"
+    ],
+    "createdDate": "2024-01-30",
+    "modifiedDate": "2026-01-15"
+  },
+  {
+    "slug": "2022-01-14-study-gatsby-post1",
+    "title": "Gatsby 개발 환경 설정",
+    "description": "Windows 운영체제에서 Gatsby 개발 환경을 설치하는 방법",
+    "category": "react",
+    "tags": [
+      "react",
+      "gatsby"
+    ],
+    "createdDate": "2022-01-14",
+    "modifiedDate": "2022-01-14"
+  },
+  {
+    "slug": "2022-01-12-study-react-post1",
+    "title": "리액트 개발 환경 설치하기",
+    "description": "Windows 운영체제에서 리액트 개발 환경을 설치하는 방법",
+    "category": "react",
+    "tags": [
+      "react"
+    ],
+    "createdDate": "2022-01-12",
+    "modifiedDate": "2022-01-12"
+  }
+]

@@ -5,41 +5,40 @@ import Link from "next/link";
 import { Search, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+// 타입 정의
+interface Post {
+    slug: string;
+    title: string;
+    description: string;
+    category?: string;
+    tags?: string[];
+}
+
 export default function SearchPage() {
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState("");
-    const [searchResults, setSearchResults] = useState<any[]>([]);
+    const [searchResults, setSearchResults] = useState<Post[]>([]);
+    const [allPosts, setAllPosts] = useState<Post[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    // 정적 포스트 데이터
-    const allPosts = [
-        {
-            slug: "example-post",
-            title: "Next.js와 GitHub Pages로 블로그 만들기",
-            description:
-                "Next.js와 Tailwind CSS를 사용하여 GitHub Pages에 배포 가능한 정적 블로그를 만드는 방법을 알아봅니다.",
-            category: "Development",
-        },
-        {
-            slug: "tailwind-tips",
-            title: "글래스모피즘 디자인 완벽 가이드",
-            description:
-                "Tailwind CSS를 사용하여 멋진 글래스모피즘 효과를 구현하는 방법을 상세히 알아봅니다.",
-            category: "Design",
-        },
-        {
-            slug: "series-feature",
-            title: "블로그에 시리즈 기능 구현하기",
-            description:
-                "연관된 포스트들을 시리즈로 묶어서 독자들이 쉽게 탐색할 수 있도록 하는 시리즈 기능을 구현해봅니다.",
-            category: "Development",
-        },
-        {
-            slug: "react-hooks",
-            title: "React Hooks 완벽 정리",
-            description: "React Hooks의 핵심 개념과 실전 활용법을 정리합니다.",
-            category: "Development",
-        },
-    ];
+    // 컴포넌트 마운트 시 실제 포스트 데이터 가져오기
+    useEffect(() => {
+        async function fetchPosts() {
+            try {
+                const response = await fetch("/posts.json");
+                if (response.ok) {
+                    const posts = await response.json();
+                    setAllPosts(posts);
+                }
+            } catch (error) {
+                console.error("Failed to fetch posts:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+
+        fetchPosts();
+    }, []);
 
     // 실시간 검색 (debounce 적용)
     useEffect(() => {
@@ -54,13 +53,15 @@ export default function SearchPage() {
             const results = allPosts.filter(
                 (post) =>
                     post.title.toLowerCase().includes(query) ||
-                    post.description.toLowerCase().includes(query),
+                    post.description?.toLowerCase().includes(query) ||
+                    post.category?.toLowerCase().includes(query) ||
+                    post.tags?.some((tag) => tag.toLowerCase().includes(query)),
             );
             setSearchResults(results);
         }, 300);
 
         return () => clearTimeout(timeoutId);
-    }, [searchQuery]);
+    }, [searchQuery, allPosts]);
 
     return (
         <div className="min-h-screen">
@@ -102,7 +103,11 @@ export default function SearchPage() {
                 </div>
 
                 {/* 실시간 검색 결과 */}
-                {searchQuery.trim() ? (
+                {isLoading ? (
+                    <div className="backdrop-blur-2xl bg-white/40 border border-white/60 rounded-2xl p-12 text-center shadow-[0_8px_32px_0_rgba(31,38,135,0.15)]">
+                        <p className="text-gray-700">포스트를 불러오는 중...</p>
+                    </div>
+                ) : searchQuery.trim() ? (
                     <div className="backdrop-blur-2xl bg-white/40 border border-white/60 rounded-2xl p-4 sm:p-6 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)]">
                         {searchResults.length > 0 ? (
                             <>
@@ -126,9 +131,26 @@ export default function SearchPage() {
                                                     </span>
                                                 )}
                                             </div>
-                                            <p className="text-sm sm:text-base text-gray-700">
-                                                {post.description}
-                                            </p>
+                                            {post.description && (
+                                                <p className="text-sm sm:text-base text-gray-700 mb-2">
+                                                    {post.description}
+                                                </p>
+                                            )}
+                                            {post.tags &&
+                                                post.tags.length > 0 && (
+                                                    <div className="flex flex-wrap gap-2 mt-2">
+                                                        {post.tags
+                                                            .slice(0, 3)
+                                                            .map((tag) => (
+                                                                <span
+                                                                    key={tag}
+                                                                    className="px-2 py-1 backdrop-blur-xl bg-purple-500/20 border border-purple-400/40 rounded-full text-xs text-purple-700"
+                                                                >
+                                                                    #{tag}
+                                                                </span>
+                                                            ))}
+                                                    </div>
+                                                )}
                                         </Link>
                                     ))}
                                 </div>

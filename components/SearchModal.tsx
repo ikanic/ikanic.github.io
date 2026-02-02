@@ -10,26 +10,38 @@ interface SearchModalProps {
     onClose: () => void;
 }
 
+interface Post {
+    slug: string;
+    title: string;
+    description: string;
+    category?: string;
+    tags?: string[];
+}
+
 function SearchModalContent({ onClose }: { onClose: () => void }) {
     const [searchQuery, setSearchQuery] = useState("");
-    const [searchResults, setSearchResults] = useState<any[]>([]);
+    const [searchResults, setSearchResults] = useState<Post[]>([]);
+    const [allPosts, setAllPosts] = useState<Post[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const allPosts = [
-        {
-            slug: "example-post",
-            title: "Next.js와 GitHub Pages로 블로그 만들기",
-            description:
-                "Next.js와 Tailwind CSS를 사용하여 GitHub Pages에 배포 가능한 정적 블로그를 만드는 방법을 알아봅니다.",
-            category: "Development",
-        },
-        {
-            slug: "tailwind-tips",
-            title: "글래스모피즘 디자인 완벽 가이드",
-            description:
-                "Tailwind CSS를 사용하여 멋진 글래스모피즘 효과를 구현하는 방법을 상세히 알아봅니다.",
-            category: "Design",
-        },
-    ];
+    // 컴포넌트 마운트 시 실제 포스트 데이터 가져오기
+    useEffect(() => {
+        async function fetchPosts() {
+            try {
+                const response = await fetch("/posts.json");
+                if (response.ok) {
+                    const posts = await response.json();
+                    setAllPosts(posts);
+                }
+            } catch (error) {
+                console.error("Failed to fetch posts:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+
+        fetchPosts();
+    }, []);
 
     // 검색
     useEffect(() => {
@@ -39,11 +51,15 @@ function SearchModalContent({ onClose }: { onClose: () => void }) {
         }
 
         const query = searchQuery.toLowerCase();
-        const results = allPosts.filter((post) =>
-            post.title.toLowerCase().includes(query),
+        const results = allPosts.filter(
+            (post) =>
+                post.title.toLowerCase().includes(query) ||
+                post.description?.toLowerCase().includes(query) ||
+                post.category?.toLowerCase().includes(query) ||
+                post.tags?.some((tag) => tag.toLowerCase().includes(query)),
         );
         setSearchResults(results);
-    }, [searchQuery]);
+    }, [searchQuery, allPosts]);
 
     // ESC 키
     useEffect(() => {
@@ -105,7 +121,11 @@ function SearchModalContent({ onClose }: { onClose: () => void }) {
 
                 {/* 결과 */}
                 <div className="overflow-y-auto p-4 sm:p-6 flex-1">
-                    {!searchQuery ? (
+                    {isLoading ? (
+                        <div className="text-center py-12 text-gray-600">
+                            포스트를 불러오는 중...
+                        </div>
+                    ) : !searchQuery ? (
                         <div className="text-center py-12 text-gray-600">
                             검색어를 입력해주세요
                         </div>
@@ -128,9 +148,25 @@ function SearchModalContent({ onClose }: { onClose: () => void }) {
                                             </span>
                                         )}
                                     </div>
-                                    <p className="text-sm text-gray-700">
-                                        {result.description}
-                                    </p>
+                                    {result.description && (
+                                        <p className="text-sm text-gray-700 line-clamp-2">
+                                            {result.description}
+                                        </p>
+                                    )}
+                                    {result.tags && result.tags.length > 0 && (
+                                        <div className="flex flex-wrap gap-1 mt-2">
+                                            {result.tags
+                                                .slice(0, 3)
+                                                .map((tag) => (
+                                                    <span
+                                                        key={tag}
+                                                        className="px-2 py-0.5 backdrop-blur-xl bg-purple-500/20 border border-purple-400/40 rounded-full text-xs text-purple-700"
+                                                    >
+                                                        #{tag}
+                                                    </span>
+                                                ))}
+                                        </div>
+                                    )}
                                 </Link>
                             ))}
                         </div>
