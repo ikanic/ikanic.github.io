@@ -88,12 +88,29 @@ export async function getPostBySlug(slug: string): Promise<PostData | null> {
         const fileContents = fs.readFileSync(fullPath, "utf8");
         const { data, content } = matter(fileContents);
 
+        // 전처리: 코드 블록 내 \`를 특수 마커로 치환
+        const ESCAPED_BACKTICK_MARKER = "___ESC_BT___";
+        let preprocessedContent = content;
+
+        // 코드 블록 내에서만 \`를 마커로 치환 (하이라이트 메타 포함)
+        preprocessedContent = preprocessedContent.replace(
+            /^( *)```(\w+)(?:\s+\{([^}]+)\})?\n([\s\S]*?)\n\1```/gm,
+            (match, indent, lang, highlight, codeContent) => {
+                const markedCode = codeContent.replace(
+                    /\\`/g,
+                    ESCAPED_BACKTICK_MARKER,
+                );
+                const highlightPart = highlight ? ` {${highlight}}` : "";
+                return `${indent}\`\`\`${lang}${highlightPart}\n${markedCode}\n${indent}\`\`\``;
+            },
+        );
+
         let blockId = 0;
         const blockMeta = new Map<string, string>();
         const backtickMap = new Map<string, string>();
 
         // 1단계: 코드 블록 감지 및 백틱 보호
-        const contentWithProtectedBackticks = content.replace(
+        const contentWithProtectedBackticks = preprocessedContent.replace(
             /^( *)```(\w+)(?:\s+\{([^}]+)\})?\n([\s\S]*?)\n\1```/gm,
             (match, indent, lang, highlight, codeContent) => {
                 const id = `cb${blockId++}`;
@@ -225,6 +242,9 @@ export async function getPostBySlug(slug: string): Promise<PostData | null> {
                 markTag,
             );
         });
+
+        // 5단계: 이스케이프된 백틱 마커를 그레이브 악센트(ˋ)로 교체
+        contentHtml = contentHtml.replace(/___ESC_BT___/g, "ˋ");
 
         return {
             slug,
