@@ -51,3 +51,8 @@ next-env.d.ts
 # OS
 .DS_Store
 Thumbs.db
+
+# 빌드 시 자동 생성되는 파일들 (rebuild)
+/public/posts.json
+/public/rss.xml
+/public/sitemap.xml
