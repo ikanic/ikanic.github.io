@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { PostData } from "@/lib/posts";
-import { Calendar, Tag, Folder } from "lucide-react";
+import { Calendar, Tag, Folder, Clock } from "lucide-react";
 import { format } from "date-fns";
 
 interface PostCardHorizontalProps {
@@ -60,6 +60,14 @@ export default function PostCardHorizontal({ post }: PostCardHorizontalProps) {
                                     </span>
                                 )}
                             </div>
+
+                            {/* 독서 시간 */}
+                            {post.readingTime && (
+                                <div className="flex items-center gap-1">
+                                    <Clock size={14} />
+                                    <span>{post.readingTime}</span>
+                                </div>
+                            )}
 
                             {/* 카테고리 */}
                             {post.category && (

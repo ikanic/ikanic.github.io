@@ -9,6 +9,7 @@ import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import rehypeStringify from "rehype-stringify";
+import { getReadingTimeFromMarkdown } from "./reading-time";
 
 const postsDirectory = path.join(process.cwd(), "posts");
 
@@ -24,6 +25,8 @@ export interface PostData {
     description?: string;
     thumbnail?: string;
     content?: string;
+    readingTime?: string; // 독서 시간 (예: "5분")
+    readingMinutes?: number; // 독서 시간 (숫자)
 }
 
 // 날짜 포맷 파싱 (2026-01-08(목) 00:01:32.000 -> 2026-01-08)
@@ -54,7 +57,10 @@ export function getAllPosts(): PostData[] {
                 const slug = fileName.replace(/\.md$/, "");
                 const fullPath = path.join(postsDirectory, fileName);
                 const fileContents = fs.readFileSync(fullPath, "utf8");
-                const { data } = matter(fileContents);
+                const { data, content } = matter(fileContents);
+
+                // 독서 시간 계산
+                const readingTimeResult = getReadingTimeFromMarkdown(content);
 
                 return {
                     slug,
@@ -69,6 +75,8 @@ export function getAllPosts(): PostData[] {
                     seriesOrder: data.seriesOrder,
                     description: data.description || "",
                     thumbnail: data.thumbnail,
+                    readingTime: readingTimeResult.text,
+                    readingMinutes: readingTimeResult.minutes,
                 } as PostData;
             });
 
@@ -87,6 +95,9 @@ export async function getPostBySlug(slug: string): Promise<PostData | null> {
         const fullPath = path.join(postsDirectory, `${slug}.md`);
         const fileContents = fs.readFileSync(fullPath, "utf8");
         const { data, content } = matter(fileContents);
+
+        // 독서 시간 계산
+        const readingTimeResult = getReadingTimeFromMarkdown(content);
 
         // 전처리: 코드 블록 내 \`를 특수 마커로 치환
         const ESCAPED_BACKTICK_MARKER = "___ESC_BT___";
@@ -260,6 +271,8 @@ export async function getPostBySlug(slug: string): Promise<PostData | null> {
             description: data.description || "",
             thumbnail: data.thumbnail,
             content: contentHtml,
+            readingTime: readingTimeResult.text,
+            readingMinutes: readingTimeResult.minutes,
         };
     } catch (error) {
         console.error("Error processing post:", error);
