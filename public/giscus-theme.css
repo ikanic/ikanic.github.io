@@ -1,0 +1,80 @@
+/* Giscus 커스텀 테마 - 글라스모르픽 스타일 */
+
+:root {
+    /* 주요 텍스트 색상 진하게 */
+    --color-prettylights-syntax-comment: rgb(17, 24, 39);
+    --color-prettylights-syntax-constant: rgb(17, 24, 39);
+    --color-prettylights-syntax-entity: rgb(17, 24, 39);
+    --color-prettylights-syntax-storage-modifier-import: rgb(17, 24, 39);
+    --color-prettylights-syntax-entity-tag: rgb(17, 24, 39);
+    --color-prettylights-syntax-keyword: rgb(17, 24, 39);
+    --color-prettylights-syntax-string: rgb(17, 24, 39);
+    --color-prettylights-syntax-variable: rgb(17, 24, 39);
+    --color-prettylights-syntax-brackethighlighter-unmatched: rgb(17, 24, 39);
+    --color-prettylights-syntax-invalid-illegal-text: rgb(17, 24, 39);
+    --color-prettylights-syntax-invalid-illegal-bg: rgba(236, 72, 153, 0.15);
+    --color-prettylights-syntax-carriage-return-text: rgb(17, 24, 39);
+    --color-prettylights-syntax-carriage-return-bg: rgba(236, 72, 153, 0.15);
+    --color-prettylights-syntax-string-regexp: rgb(17, 24, 39);
+    --color-prettylights-syntax-markup-list: rgb(17, 24, 39);
+    --color-prettylights-syntax-markup-heading: rgb(17, 24, 39);
+    --color-prettylights-syntax-markup-italic: rgb(17, 24, 39);
+    --color-prettylights-syntax-markup-bold: rgb(17, 24, 39);
+    --color-prettylights-syntax-markup-deleted-text: rgb(17, 24, 39);
+    --color-prettylights-syntax-markup-deleted-bg: rgba(236, 72, 153, 0.15);
+    --color-prettylights-syntax-markup-inserted-text: rgb(17, 24, 39);
+    --color-prettylights-syntax-markup-inserted-bg: rgba(236, 72, 153, 0.15);
+    --color-prettylights-syntax-markup-changed-text: rgb(17, 24, 39);
+    --color-prettylights-syntax-markup-changed-bg: rgba(236, 72, 153, 0.15);
+    --color-prettylights-syntax-markup-ignored-text: rgb(17, 24, 39);
+    --color-prettylights-syntax-markup-ignored-bg: rgba(236, 72, 153, 0.15);
+    --color-prettylights-syntax-meta-diff-range: rgb(17, 24, 39);
+    --color-prettylights-syntax-brackethighlighter-angle: rgb(17, 24, 39);
+    --color-prettylights-syntax-sublimelinter-gutter-mark: rgb(17, 24, 39);
+    --color-prettylights-syntax-constant-other-reference-link: rgb(17, 24, 39);
+
+    /* 텍스트 기본 색상 */
+    --color-fg-default: rgb(17, 24, 39);
+    --color-fg-muted: rgb(55, 65, 81);
+    --color-fg-subtle: rgb(75, 85, 99);
+
+    /* 링크 색상 - 분홍 계열 */
+    --color-accent-fg: rgb(219, 39, 119);
+    --color-accent-emphasis: rgb(190, 24, 93);
+
+    /* 버튼 배경 - 분홍 계열 */
+    --color-btn-bg: rgba(236, 72, 153, 0.15);
+    --color-btn-border: rgba(236, 72, 153, 0.3);
+    --color-btn-text: rgb(190, 24, 93);
+    --color-btn-hover-bg: rgba(236, 72, 153, 0.25);
+    --color-btn-hover-border: rgba(236, 72, 153, 0.4);
+    --color-btn-active-bg: rgba(236, 72, 153, 0.3);
+    --color-btn-active-border: rgba(236, 72, 153, 0.5);
+    --color-btn-selected-bg: rgba(236, 72, 153, 0.3);
+
+    /* 배경 투명 */
+    --color-canvas-default: transparent;
+    --color-canvas-overlay: rgba(255, 255, 255, 0.5);
+    --color-canvas-inset: rgba(255, 255, 255, 0.3);
+    --color-canvas-subtle: rgba(255, 255, 255, 0.2);
+
+    /* 테두리 */
+    --color-border-default: rgba(236, 72, 153, 0.2);
+    --color-border-muted: rgba(236, 72, 153, 0.15);
+}
+
+/* 정렬 버튼 강조 */
+.gsc-order-by-button {
+    font-weight: 500 !important;
+}
+
+.gsc-order-by-button.selected {
+    font-weight: 600 !important;
+}
+
+/* 댓글 수, 반응 수 강조 */
+.gsc-comment-count,
+.gsc-reactions-count {
+    font-weight: 600 !important;
+    color: rgb(17, 24, 39) !important;
+}

@@ -15,6 +15,7 @@ import Image from "next/image";
 import CodeBlockEnhancer from "@/components/CodeBlock";
 import TableOfContents from "@/components/TableOfContents";
 import MermaidDiagram from "@/components/MermaidDiagram";
+import GiscusComments from "@/components/GiscusComments";
 
 interface ProjectPageProps {
     params: Promise<{
@@ -67,69 +68,75 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
             </Link>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* 메인 콘텐츠 */}
-                <article className="lg:col-span-2">
-                    <div className="backdrop-blur-2xl bg-white/40 border border-white/60 rounded-2xl p-8 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)]">
-                        {/* 제목 */}
-                        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                            {project.title}
-                        </h1>
+                {/* 메인 콘텐츠 영역 (왼쪽 2칼럼) */}
+                <div className="lg:col-span-2 space-y-8">
+                    {/* 프로젝트 본문 */}
+                    <article>
+                        <div className="backdrop-blur-2xl bg-white/40 border border-white/60 rounded-2xl p-8 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)]">
+                            {/* 제목 */}
+                            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                                {project.title}
+                            </h1>
 
-                        {/* 설명 */}
-                        <p className="text-xl text-gray-700 mb-6">
-                            {project.description}
-                        </p>
+                            {/* 설명 */}
+                            <p className="text-xl text-gray-700 mb-6">
+                                {project.description}
+                            </p>
 
-                        {/* 메타 정보 */}
-                        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-8 pb-8 border-b border-gray-200/50">
-                            {project.period && (
-                                <div className="flex items-center gap-1">
-                                    <Calendar size={16} />
-                                    <span>{project.period}</span>
-                                </div>
-                            )}
+                            {/* 메타 정보 */}
+                            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-8 pb-8 border-b border-gray-200/50">
+                                {project.period && (
+                                    <div className="flex items-center gap-1">
+                                        <Calendar size={16} />
+                                        <span>{project.period}</span>
+                                    </div>
+                                )}
 
-                            {project.team && (
-                                <div className="flex items-center gap-1">
-                                    <Users size={16} />
-                                    <span>{project.team}</span>
-                                </div>
-                            )}
+                                {project.team && (
+                                    <div className="flex items-center gap-1">
+                                        <Users size={16} />
+                                        <span>{project.team}</span>
+                                    </div>
+                                )}
 
-                            {project.role && (
-                                <div className="flex items-center gap-1">
-                                    <Briefcase size={16} />
-                                    <span>{project.role}</span>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* 썸네일 이미지 */}
-                        {project.thumbnail && (
-                            <div className="relative w-full mb-8 rounded-xl overflow-hidden">
-                                <Image
-                                    src={project.thumbnail}
-                                    alt={project.title}
-                                    width={1200}
-                                    height={630}
-                                    className="w-full h-auto"
-                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 50vw"
-                                    priority
-                                />
+                                {project.role && (
+                                    <div className="flex items-center gap-1">
+                                        <Briefcase size={16} />
+                                        <span>{project.role}</span>
+                                    </div>
+                                )}
                             </div>
-                        )}
 
-                        {/* 프로젝트 내용 */}
-                        <CodeBlockEnhancer />
-                        <MermaidDiagram />
-                        <div
-                            className="prose prose-lg max-w-none"
-                            dangerouslySetInnerHTML={{
-                                __html: project.content || "",
-                            }}
-                        />
-                    </div>
-                </article>
+                            {/* 썸네일 이미지 */}
+                            {project.thumbnail && (
+                                <div className="relative w-full mb-8 rounded-xl overflow-hidden">
+                                    <Image
+                                        src={project.thumbnail}
+                                        alt={project.title}
+                                        width={1200}
+                                        height={630}
+                                        className="w-full h-auto"
+                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 50vw"
+                                        priority
+                                    />
+                                </div>
+                            )}
+
+                            {/* 프로젝트 내용 */}
+                            <CodeBlockEnhancer />
+                            <MermaidDiagram />
+                            <div
+                                className="prose prose-lg max-w-none"
+                                dangerouslySetInnerHTML={{
+                                    __html: project.content || "",
+                                }}
+                            />
+                        </div>
+                    </article>
+
+                    {/* 댓글 및 리액션 (Giscus) */}
+                    <GiscusComments />
+                </div>
 
                 {/* 사이드바 */}
                 <aside className="lg:col-span-1">
