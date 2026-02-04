@@ -76,6 +76,12 @@ export default function RootLayout({
                     title={`${siteConfig.title} RSS Feed`}
                     href="/rss.xml"
                 />
+                {/* Umami Analytics */}
+                <script
+                    defer
+                    src="https://github-page-analytics.vercel.app/script.js"
+                    data-website-id="148eef8f-df64-45cc-8663-546df874370c"
+                />
             </head>
             <body className={inter.className}>
                 {/* 배경 그라디언트 - 밝은 배경 */}
