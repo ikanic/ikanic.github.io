@@ -33,11 +33,8 @@ export default function GiscusComments() {
         script.setAttribute("data-reactions-enabled", "1");
         script.setAttribute("data-emit-metadata", "0");
         script.setAttribute("data-input-position", "top");
-        // 커스텀 테마 CSS 파일 사용
-        script.setAttribute(
-            "data-theme",
-            "https://taek0622.github.io/giscus-theme.css",
-        );
+        // 테스트: 기본 테마로 임시 변경
+        script.setAttribute("data-theme", "light");
         script.setAttribute("data-lang", "ko");
         script.setAttribute("data-loading", "lazy");
         script.setAttribute("crossorigin", "anonymous");
