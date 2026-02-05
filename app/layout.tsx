@@ -4,7 +4,12 @@ import "./globals.css";
 import Navigation from "@/components/Navigation";
 import { siteConfig } from "@/config/config";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+    subsets: ["latin"],
+    display: "swap", // 폰트 로딩 전 시스템 폰트 먼저 표시
+    preload: true,
+    variable: "--font-inter",
+});
 
 export const metadata: Metadata = {
     metadataBase: new URL("https://taek0622.github.io"),
@@ -69,6 +74,14 @@ export default function RootLayout({
     return (
         <html lang="ko">
             <head>
+                {/* DNS Prefetch 및 Preconnect - 폰트/리소스 로딩 최적화 */}
+                <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+                <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+                <link
+                    rel="preconnect"
+                    href="https://github-page-analytics.vercel.app"
+                />
+
                 {/* RSS 피드 링크 */}
                 <link
                     rel="alternate"
@@ -88,11 +101,11 @@ export default function RootLayout({
                 {/* 배경 그라디언트 - 밝은 배경 */}
                 <div className="fixed inset-0 -z-10 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50" />
 
-                {/* 애니메이션 배경 효과 - 블러 강화 */}
+                {/* 애니메이션 배경 효과 - iOS Safari 최적화 */}
                 <div className="fixed inset-0 -z-10 opacity-50">
-                    <div className="absolute top-0 -left-4 w-[500px] h-[500px] bg-blue-400 rounded-full mix-blend-multiply filter blur-[128px] animate-blob" />
-                    <div className="absolute top-0 -right-4 w-[500px] h-[500px] bg-purple-400 rounded-full mix-blend-multiply filter blur-[128px] animate-blob animation-delay-2000" />
-                    <div className="absolute -bottom-8 left-20 w-[500px] h-[500px] bg-pink-400 rounded-full mix-blend-multiply filter blur-[128px] animate-blob animation-delay-4000" />
+                    <div className="absolute top-0 -left-4 w-[500px] h-[500px] bg-blue-400 rounded-full mix-blend-multiply filter blur-[128px] animate-blob will-change-transform" />
+                    <div className="absolute top-0 -right-4 w-[500px] h-[500px] bg-purple-400 rounded-full mix-blend-multiply filter blur-[128px] animate-blob animation-delay-2000 will-change-transform" />
+                    <div className="absolute -bottom-8 left-20 w-[500px] h-[500px] bg-pink-400 rounded-full mix-blend-multiply filter blur-[128px] animate-blob animation-delay-4000 will-change-transform" />
                 </div>
 
                 <Navigation />

@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* 폰트 설정 */
+/* 폰트 설정 - iOS Safari 최적화 */
 * {
     font-family:
         "Pretendard",
@@ -10,12 +10,28 @@
         sans-serif;
 }
 
+/* Pretendard 폰트 최적화 로드 */
+@font-face {
+    font-family: "Pretendard";
+    src: url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css");
+    font-display: swap; /* 폰트 로딩 전 시스템 폰트 사용 */
+}
+
 code,
 pre,
 kbd,
 samp,
 .code-font {
     font-family: "D2Coding", "Courier New", monospace !important;
+}
+
+/* D2Coding 폰트 최적화 로드 */
+@font-face {
+    font-family: "D2Coding";
+    src: url("https://cdn.jsdelivr.net/gh/wan2land/d2coding/d2coding-subset.woff2")
+        format("woff2");
+    font-display: swap;
+    font-weight: normal;
 }
 
 @layer utilities {
@@ -47,24 +63,26 @@ samp,
     }
 }
 
-/* Blob 애니메이션 */
+/* Blob 애니메이션 - iOS Safari GPU 가속 */
 @keyframes blob {
     0% {
-        transform: translate(0px, 0px) scale(1);
+        transform: translate3d(0px, 0px, 0) scale(1);
     }
     33% {
-        transform: translate(30px, -50px) scale(1.1);
+        transform: translate3d(30px, -50px, 0) scale(1.1);
     }
     66% {
-        transform: translate(-20px, 20px) scale(0.9);
+        transform: translate3d(-20px, 20px, 0) scale(0.9);
     }
     100% {
-        transform: translate(0px, 0px) scale(1);
+        transform: translate3d(0px, 0px, 0) scale(1);
     }
 }
 
 .animate-blob {
     animation: blob 7s infinite;
+    transform: translate3d(0, 0, 0); /* GPU 가속 활성화 */
+    backface-visibility: hidden; /* iOS Safari 깜빡임 방지 */
 }
 
 /* 마크다운 스타일링 */
