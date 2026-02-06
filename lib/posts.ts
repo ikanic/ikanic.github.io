@@ -46,22 +46,89 @@ function processCustomSyntax(content: string): string {
     let processed = content;
 
     // 1. 윗첨자: ^^내용^^ -> <sup>내용</sup>
-    // 이스케이프된 경우(\^\^)는 제외
     processed = processed.replace(/(?<!\\)\^\^([^\^]+)\^\^/g, "<sup>$1</sup>");
 
     // 2. 아랫첨자: ,,내용,, -> <sub>내용</sub>
-    // 이스케이프된 경우(\,\,)는 제외
     processed = processed.replace(/(?<!\\),,([^,]+),,/g, "<sub>$1</sub>");
 
     // 3. 이스케이프 처리 제거
     processed = processed.replace(/\\\^\^/g, "^^");
     processed = processed.replace(/\\,,/g, ",,");
 
-    // 4. 토글 문법: :::toggle 제목\n내용\n:::
+    // 4. 문구 인용: :::quote\n내용\n::: -> 큰따옴표 스타일
+    processed = processed.replace(
+        /:::quote\s*\n([\s\S]+?)\n:::/g,
+        (match, content) => {
+            return `<blockquote class="markdown-quote">
+${content.trim()}
+</blockquote>`;
+        },
+    );
+
+    // 5. 경고 블록: :::warning 제목\n내용\n:::
+    processed = processed.replace(
+        /:::warning\s+(.+?)\n([\s\S]+?)\n:::/g,
+        (match, title, content) => {
+            return `<div class="markdown-callout markdown-warning">
+<div class="markdown-callout-title">⚠️ ${title.trim()}</div>
+<div class="markdown-callout-content">
+
+${content.trim()}
+
+</div>
+</div>`;
+        },
+    );
+
+    // 6. 에러 블록: :::error 제목\n내용\n:::
+    processed = processed.replace(
+        /:::error\s+(.+?)\n([\s\S]+?)\n:::/g,
+        (match, title, content) => {
+            return `<div class="markdown-callout markdown-error">
+<div class="markdown-callout-title">❌ ${title.trim()}</div>
+<div class="markdown-callout-content">
+
+${content.trim()}
+
+</div>
+</div>`;
+        },
+    );
+
+    // 7. 정보 블록: :::info 제목\n내용\n:::
+    processed = processed.replace(
+        /:::info\s+(.+?)\n([\s\S]+?)\n:::/g,
+        (match, title, content) => {
+            return `<div class="markdown-callout markdown-info">
+<div class="markdown-callout-title">ℹ️ ${title.trim()}</div>
+<div class="markdown-callout-content">
+
+${content.trim()}
+
+</div>
+</div>`;
+        },
+    );
+
+    // 8. 성공 블록: :::success 제목\n내용\n:::
+    processed = processed.replace(
+        /:::success\s+(.+?)\n([\s\S]+?)\n:::/g,
+        (match, title, content) => {
+            return `<div class="markdown-callout markdown-success">
+<div class="markdown-callout-title">✅ ${title.trim()}</div>
+<div class="markdown-callout-content">
+
+${content.trim()}
+
+</div>
+</div>`;
+        },
+    );
+
+    // 9. 토글: :::toggle 제목\n내용\n:::
     processed = processed.replace(
         /:::toggle\s+(.+?)\n([\s\S]+?)\n:::/g,
         (match, title, content) => {
-            const toggleId = `toggle-${Math.random().toString(36).substr(2, 9)}`;
             return `<details class="markdown-toggle">
 <summary class="markdown-toggle-title">${title.trim()}</summary>
 <div class="markdown-toggle-content">
@@ -73,7 +140,117 @@ ${content.trim()}
         },
     );
 
+    // 10. 테이블 셀 병합 처리
+    processed = processTableMerge(processed);
+
     return processed;
+}
+
+// 테이블 셀 병합 처리 함수
+function processTableMerge(content: string): string {
+    // 테이블 전체를 찾아서 처리
+    return content.replace(/(\|[^\n]+\|\n)+/g, (tableMatch) => {
+        const lines = tableMatch.trim().split("\n");
+        if (lines.length < 2) return tableMatch;
+
+        // 테이블 헤더와 구분선 확인
+        const hasHeader = lines[1].match(/^\|[\s:-]+\|$/);
+        if (!hasHeader) return tableMatch;
+
+        const headerLine = lines[0];
+        const separatorLine = lines[1];
+        const bodyLines = lines.slice(2);
+
+        // HTML 테이블로 변환
+        let html = '<table class="markdown-table-merged">\n';
+
+        // 헤더 처리
+        const headerCells = parseTableRow(headerLine);
+        html += "<thead><tr>\n";
+        let skipCols = 0;
+        for (let i = 0; i < headerCells.length; i++) {
+            if (skipCols > 0) {
+                skipCols--;
+                continue;
+            }
+            const { content, colspan, rowspan } = parseCellMerge(
+                headerCells[i],
+            );
+            html += `<th${colspan > 1 ? ` colspan="${colspan}"` : ""}${rowspan > 1 ? ` rowspan="${rowspan}"` : ""}>${content}</th>\n`;
+            skipCols = colspan - 1;
+        }
+        html += "</tr></thead>\n";
+
+        // 바디 처리
+        html += "<tbody>\n";
+        const skipRows: Set<string> = new Set(); // "row-col" 형식으로 저장
+
+        for (let rowIdx = 0; rowIdx < bodyLines.length; rowIdx++) {
+            const cells = parseTableRow(bodyLines[rowIdx]);
+            html += "<tr>\n";
+            let skipCols = 0;
+
+            for (let colIdx = 0; colIdx < cells.length; colIdx++) {
+                const key = `${rowIdx}-${colIdx}`;
+                if (skipRows.has(key) || skipCols > 0) {
+                    if (skipCols > 0) skipCols--;
+                    continue;
+                }
+
+                const { content, colspan, rowspan } = parseCellMerge(
+                    cells[colIdx],
+                );
+                html += `<td${colspan > 1 ? ` colspan="${colspan}"` : ""}${rowspan > 1 ? ` rowspan="${rowspan}"` : ""}>${content}</td>\n`;
+
+                // 병합된 셀의 위치 기록
+                for (let r = 0; r < rowspan; r++) {
+                    for (let c = 0; c < colspan; c++) {
+                        if (r === 0 && c === 0) continue;
+                        skipRows.add(`${rowIdx + r}-${colIdx + c}`);
+                    }
+                }
+
+                skipCols = colspan - 1;
+            }
+            html += "</tr>\n";
+        }
+        html += "</tbody>\n</table>\n";
+
+        return html;
+    });
+}
+
+function parseTableRow(row: string): string[] {
+    return row
+        .split("|")
+        .slice(1, -1)
+        .map((cell) => cell.trim());
+}
+
+function parseCellMerge(cell: string): {
+    content: string;
+    colspan: number;
+    rowspan: number;
+} {
+    let colspan = 1;
+    let rowspan = 1;
+    let content = cell;
+
+    // <-n> 형태 찾기 (오른쪽 병합)
+    const colspanMatch = content.match(/<-(\d+)>/);
+    if (colspanMatch) {
+        colspan = parseInt(colspanMatch[1]) + 1; // n개 병합 = 자신 포함 n+1
+        content = content.replace(/<-\d+>/, "").trim();
+    }
+
+    // <|n> 형태 찾기 (아래쪽 병합)
+    const rowspanMatch = content.match(/<\|(\d+)>/);
+    if (rowspanMatch) {
+        rowspan = parseInt(rowspanMatch[1]) + 1; // n개 병합 = 자신 포함 n+1
+        content = content.replace(/<\|\d+>/, "").trim();
+    }
+
+    return { content, colspan, rowspan };
 }
 
 // 모든 포스트 가져오기
@@ -158,11 +335,27 @@ export async function getPostBySlug(slug: string): Promise<PostData | null> {
 
         // 코드 블록 감지 및 백틱 보호
         const contentWithProtectedBackticks = preprocessedContent.replace(
-            /^( *)```(\w+)(?:\s+\{([^}]+)\})?\n([\s\S]*?)\n\1```/gm,
-            (match, indent, lang, highlight, codeContent) => {
+            /^( *)```(\w+)(?:\s+([^\n]+))?\n([\s\S]*?)\n\1```/gm,
+            (match, indent, lang, meta, codeContent) => {
                 const id = `cb${blockId++}`;
-                if (highlight) {
-                    blockMeta.set(id, highlight);
+
+                // 메타 정보 파싱 (title="..." 과 {1,3-5} 형태 모두 지원)
+                let title = "";
+                let highlight = "";
+
+                if (meta) {
+                    // title 추출
+                    const titleMatch = meta.match(/title="([^"]+)"/);
+                    if (titleMatch) {
+                        title = titleMatch[1];
+                    }
+
+                    // 하이라이트 추출 {1,3-5} 형태
+                    const highlightMatch = meta.match(/\{([^}]+)\}/);
+                    if (highlightMatch) {
+                        highlight = highlightMatch[1];
+                        blockMeta.set(id, highlight);
+                    }
                 }
 
                 let markerIndex = 0;
@@ -175,7 +368,9 @@ export async function getPostBySlug(slug: string): Promise<PostData | null> {
                     },
                 );
 
-                return `${indent}<!-- ${id} -->\n${indent}\`\`\`${lang}\n${protectedCode}\n${indent}\`\`\``;
+                // title이 있으면 주석으로 추가
+                const titleComment = title ? `<!-- title:${title} -->` : "";
+                return `${indent}${titleComment}<!-- ${id} -->\n${indent}\`\`\`${lang}\n${protectedCode}\n${indent}\`\`\``;
             },
         );
 
@@ -191,6 +386,22 @@ export async function getPostBySlug(slug: string): Promise<PostData | null> {
                 theme: "github-dark",
                 keepBackground: false,
             })
+            // 링크를 새 탭에서 열도록 처리
+            .use(() => {
+                return (tree: any) => {
+                    const visit = (node: any) => {
+                        if (node.type === "element" && node.tagName === "a") {
+                            node.properties = node.properties || {};
+                            node.properties.target = "_blank";
+                            node.properties.rel = "noopener noreferrer";
+                        }
+                        if (node.children) {
+                            node.children.forEach(visit);
+                        }
+                    };
+                    visit(tree);
+                };
+            })
             // @ts-ignore
             .use(rehypeStringify, { allowDangerousHtml: true })
             .process(contentWithProtectedBackticks);
@@ -199,16 +410,28 @@ export async function getPostBySlug(slug: string): Promise<PostData | null> {
 
         // 메타 정보 추가
         contentHtml = contentHtml.replace(
-            /<!--\s*(cb\d+)\s*-->\s*<figure[^>]*>[\s\S]*?<pre/g,
-            (match, id) => {
+            /(?:<!--\s*title:([^>]+)\s*-->)?<!--\s*(cb\d+)\s*-->\s*<figure[^>]*>[\s\S]*?<pre/g,
+            (match, title, id) => {
                 const meta = blockMeta.get(id);
+                let result = match;
+
+                // 하이라이트 메타 추가
                 if (meta) {
-                    return match.replace(
+                    result = result.replace(
                         /<pre/,
                         `<pre data-highlight-meta="${meta}"`,
                     );
                 }
-                return match;
+
+                // 타이틀 추가
+                if (title) {
+                    result = result.replace(
+                        /<pre/,
+                        `<pre data-title="${title}"`,
+                    );
+                }
+
+                return result;
             },
         );
 

@@ -4,15 +4,12 @@ import { useEffect } from "react";
 
 export default function CodeBlockEnhancer() {
     useEffect(() => {
-        // 약간의 지연을 두고 한 번만 실행
         const timer = setTimeout(() => {
-            // 모든 figure 요소 찾기 (rehype-pretty-code가 생성)
             const figures = document.querySelectorAll(
                 "figure[data-rehype-pretty-code-figure]",
             );
 
             figures.forEach((figure, figIndex) => {
-                // 이미 처리된 블록은 스킵
                 if (figure.hasAttribute("data-enhanced")) return;
                 figure.setAttribute("data-enhanced", "true");
 
@@ -30,30 +27,29 @@ export default function CodeBlockEnhancer() {
                 const highlightMeta =
                     pre.getAttribute("data-highlight-meta") || "";
 
-                // Mermaid는 별도로 처리 (MermaidDiagram 컴포넌트가 처리)
+                // 타이틀 읽기 (pre의 data-title 속성 또는 figcaption)
+                let title = pre.getAttribute("data-title") || "";
+                if (!title) {
+                    const figcaption = figure.querySelector("figcaption");
+                    if (figcaption) {
+                        title = figcaption.textContent || "";
+                        figcaption.remove();
+                    }
+                }
+
                 if (language === "mermaidc") {
                     return;
                 }
 
-                // 타이틀 감지 (figure의 data-title 또는 figcaption)
-                let title = "";
-                const figcaption = figure.querySelector("figcaption");
-                if (figcaption) {
-                    title = figcaption.textContent || "";
-                    figcaption.remove();
-                }
-
-                // 줄 번호 추가 (이미 있는지 확인)
+                // 줄 번호 추가
                 const lines = code.querySelectorAll("[data-line]");
                 let actualLineNumber = 1;
 
-                // 하이라이트 정보 파싱
                 const highlightGroups: number[][] = [];
                 if (highlightMeta) {
                     const parts = highlightMeta.split(",").map((s) => s.trim());
                     parts.forEach((part) => {
                         if (part.includes("-")) {
-                            // 범위 (예: 3-5)
                             const [start, end] = part
                                 .split("-")
                                 .map((n) => parseInt(n.trim()));
@@ -63,23 +59,20 @@ export default function CodeBlockEnhancer() {
                             }
                             highlightGroups.push(range);
                         } else {
-                            // 단일 줄 (예: 1)
                             highlightGroups.push([parseInt(part)]);
                         }
                     });
                 }
 
                 if (lines.length > 0) {
-                    // 1단계: 줄 번호와 diff 기호만 먼저 처리
+                    // 줄 번호와 diff 기호 처리
                     lines.forEach((line) => {
                         const lineElement = line as HTMLElement;
 
-                        // 이미 처리되었는지 확인
                         if (lineElement.hasAttribute("data-num-processed"))
                             return;
                         lineElement.setAttribute("data-num-processed", "true");
 
-                        // 이미 줄 번호가 있는지 확인
                         let existingLineNumber =
                             lineElement.querySelector(".line-number");
 
@@ -126,7 +119,7 @@ export default function CodeBlockEnhancer() {
                             }
                         }
 
-                        // 줄 번호 업데이트 또는 생성
+                        // 줄 번호 추가
                         if (existingLineNumber) {
                             existingLineNumber.textContent =
                                 String(actualLineNumber);
@@ -160,7 +153,6 @@ export default function CodeBlockEnhancer() {
                             }
                         }
 
-                        // 다음 줄이 +가 아니면 줄 번호 증가
                         const nextLine = lineElement.nextElementSibling;
                         const nextText = nextLine?.textContent || "";
                         if (!/^\+( |$)/.test(nextText)) {
@@ -168,7 +160,7 @@ export default function CodeBlockEnhancer() {
                         }
                     });
 
-                    // 2단계: 단어 하이라이트 처리 (줄 하이라이트 전에!)
+                    // 단어 하이라이트 처리
                     lines.forEach((line) => {
                         const lineElement = line as HTMLElement;
 
@@ -176,22 +168,16 @@ export default function CodeBlockEnhancer() {
                             return;
                         lineElement.setAttribute("data-word-processed", "true");
 
-                        // 이미 <mark class="code-word-highlight">가 있으면 스킵
                         const existingMarks = lineElement.querySelectorAll(
                             ".code-word-highlight",
                         );
                         if (existingMarks.length > 0) {
-                            return; // 이미 서버에서 처리됨
+                            return;
                         }
 
-                        // 전체 텍스트를 먼저 확인 (이스케이프된 백틱 체크용)
-                        const fullText = lineElement.textContent || "";
-
-                        // 모든 span 요소를 순회하면서 백틱 패턴 처리
                         const allSpans = lineElement.querySelectorAll("span");
 
                         allSpans.forEach((span) => {
-                            // 줄번호나 diff기호는 스킵
                             if (
                                 span.classList.contains("line-number") ||
                                 span.classList.contains("diff-symbol")
@@ -199,7 +185,6 @@ export default function CodeBlockEnhancer() {
                                 return;
                             }
 
-                            // 이 span의 텍스트 노드들만 처리
                             const childNodes = Array.from(span.childNodes);
                             childNodes.forEach((node) => {
                                 if (node.nodeType !== Node.TEXT_NODE) return;
@@ -207,7 +192,6 @@ export default function CodeBlockEnhancer() {
                                 const textNode = node as Text;
                                 const text = textNode.textContent || "";
 
-                                // 백틱 패턴 찾기
                                 const regex = /`([^`]+)`/g;
                                 const matches: RegExpExecArray[] = [];
                                 let match;
@@ -218,13 +202,11 @@ export default function CodeBlockEnhancer() {
 
                                 if (matches.length === 0) return;
 
-                                // 각 매치에 대해 이스케이프 여부 확인
                                 const fragment =
                                     document.createDocumentFragment();
                                 let lastIndex = 0;
 
                                 matches.forEach((match) => {
-                                    // 이 백틱이 전체 텍스트에서 \`로 이스케이프되었는지 확인
                                     const beforeMatch = text.substring(
                                         0,
                                         match.index,
@@ -233,10 +215,8 @@ export default function CodeBlockEnhancer() {
                                         match.index + match[0].length,
                                     );
 
-                                    // 백틱 바로 앞에 \가 있는지 확인
                                     const isEscapedStart =
                                         beforeMatch.endsWith("\\");
-                                    // 백틱 바로 뒤에 \가 있는지 확인
                                     const isEscapedEnd =
                                         afterMatch.startsWith("\\");
 
@@ -251,7 +231,6 @@ export default function CodeBlockEnhancer() {
                                         );
                                     }
 
-                                    // 이스케이프되지 않은 경우에만 하이라이팅
                                     if (!isEscapedStart && !isEscapedEnd) {
                                         const highlight =
                                             document.createElement("mark");
@@ -260,7 +239,6 @@ export default function CodeBlockEnhancer() {
                                         highlight.textContent = match[1];
                                         fragment.appendChild(highlight);
                                     } else {
-                                        // 이스케이프된 경우 그대로 텍스트로
                                         fragment.appendChild(
                                             document.createTextNode(match[0]),
                                         );
@@ -282,7 +260,7 @@ export default function CodeBlockEnhancer() {
                         });
                     });
 
-                    // 3단계: 줄 하이라이트 처리
+                    // 줄 하이라이트 처리 (빈 줄 포함)
                     highlightGroups.forEach((group) => {
                         const linesToHighlight: HTMLElement[] = [];
                         let currentLineNum = 1;
@@ -313,7 +291,6 @@ export default function CodeBlockEnhancer() {
                             const diffSymbol =
                                 lineElement.querySelector(".diff-symbol");
 
-                            // 줄번호/diff기호 제외한 모든 노드 수집
                             const contentNodes: ChildNode[] = [];
                             Array.from(lineElement.childNodes).forEach(
                                 (node) => {
@@ -326,9 +303,12 @@ export default function CodeBlockEnhancer() {
                                 },
                             );
 
-                            if (contentNodes.length === 0) return;
+                            if (contentNodes.length === 0) {
+                                // 빈 줄 - 공백 노드 하나 추가
+                                const spaceNode = document.createTextNode(" ");
+                                contentNodes.push(spaceNode);
+                            }
 
-                            // 앞 공백 노드와 실제 콘텐츠 분리
                             const whitespaceNodes: ChildNode[] = [];
                             const realContentNodes: ChildNode[] = [];
                             let foundNonWhitespace = false;
@@ -337,7 +317,6 @@ export default function CodeBlockEnhancer() {
                                 const nodeText = node.textContent || "";
 
                                 if (!foundNonWhitespace) {
-                                    // 순수 공백만 있는 노드
                                     if (/^\s*$/.test(nodeText)) {
                                         whitespaceNodes.push(
                                             node.cloneNode(true) as ChildNode,
@@ -345,7 +324,6 @@ export default function CodeBlockEnhancer() {
                                         return;
                                     }
 
-                                    // 앞에 공백이 있는 노드
                                     if (/^\s/.test(nodeText)) {
                                         if (node.nodeType === Node.TEXT_NODE) {
                                             const match =
@@ -420,34 +398,27 @@ export default function CodeBlockEnhancer() {
                                 );
                             });
 
-                            // 하이라이트 블록 생성
                             const highlightBlock =
                                 document.createElement("span");
                             highlightBlock.className = "highlight-block";
 
-                            // 기존 노드 제거
                             contentNodes.forEach((node) => {
                                 if (node.parentNode === lineElement) {
                                     lineElement.removeChild(node);
                                 }
                             });
 
-                            // 앞 공백 먼저 추가
                             whitespaceNodes.forEach((node) =>
                                 lineElement.appendChild(node),
                             );
 
-                            // 실제 콘텐츠를 하이라이트 블록에
                             realContentNodes.forEach((node) =>
                                 highlightBlock.appendChild(node),
                             );
 
-                            // 하이라이트 블록 추가
                             lineElement.appendChild(highlightBlock);
                         } else {
-                            // 여러 줄 - 시작점과 끝점을 맞춰서 박스 생성
-
-                            // 1. 최소 들여쓰기 찾기
+                            // 여러 줄 하이라이트 (기존 로직 유지)
                             let minIndent = Infinity;
 
                             linesToHighlight.forEach((lineElement) => {
@@ -479,7 +450,11 @@ export default function CodeBlockEnhancer() {
                                 }
                             });
 
-                            // 2. minIndent를 뺀 후 가장 긴 내용의 길이 찾기
+                            // minIndent가 Infinity이면 (모든 줄이 빈 줄) 0으로 설정
+                            if (minIndent === Infinity) {
+                                minIndent = 0;
+                            }
+
                             let maxContentLength = 0;
 
                             linesToHighlight.forEach((lineElement) => {
@@ -514,7 +489,11 @@ export default function CodeBlockEnhancer() {
                                 }
                             });
 
-                            // 각 줄 처리
+                            // 빈 줄만 있는 경우 최소 너비 설정
+                            if (maxContentLength === 0) {
+                                maxContentLength = 1;
+                            }
+
                             linesToHighlight.forEach((lineElement, idx) => {
                                 if (
                                     lineElement.querySelector(
@@ -540,9 +519,13 @@ export default function CodeBlockEnhancer() {
                                     },
                                 );
 
-                                if (contentNodes.length === 0) return;
+                                if (contentNodes.length === 0) {
+                                    // 빈 줄
+                                    contentNodes.push(
+                                        document.createTextNode(" "),
+                                    );
+                                }
 
-                                // minIndent 만큼 공백을 분리
                                 const whitespaceNodes: ChildNode[] = [];
                                 const boxContentNodes: ChildNode[] = [];
                                 let removedCount = 0;
@@ -716,13 +699,11 @@ export default function CodeBlockEnhancer() {
                                     }
                                 }
 
-                                // 하이라이트 블록 생성
                                 const highlightBlock =
                                     document.createElement("span");
                                 highlightBlock.className =
                                     "highlight-block highlight-block-group";
 
-                                // 박스 너비를 CSS 변수로 설정
                                 (
                                     highlightBlock as HTMLElement
                                 ).style.setProperty(
@@ -739,19 +720,16 @@ export default function CodeBlockEnhancer() {
                                         "highlight-block-last",
                                     );
 
-                                // 기존 노드 제거
                                 contentNodes.forEach((node) => {
                                     if (node.parentNode === lineElement) {
                                         lineElement.removeChild(node);
                                     }
                                 });
 
-                                // 앞 공백 추가 (박스 밖)
                                 whitespaceNodes.forEach((node) =>
                                     lineElement.appendChild(node),
                                 );
 
-                                // 박스 내용 추가
                                 boxContentNodes.forEach((node) =>
                                     highlightBlock.appendChild(node),
                                 );
