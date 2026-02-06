@@ -47,10 +47,10 @@ export default function BlogClient({
     >(initialFilter.type);
     const [filterValue, setFilterValue] = useState<string>(initialFilter.value);
 
-    // 접기 상태
+    // 접기 상태 - Tags와 Series는 기본적으로 접힘
     const [isCategoryOpen, setIsCategoryOpen] = useState(true);
-    const [isTagOpen, setIsTagOpen] = useState(true);
-    const [isSeriesOpen, setIsSeriesOpen] = useState(true);
+    const [isTagOpen, setIsTagOpen] = useState(false);
+    const [isSeriesOpen, setIsSeriesOpen] = useState(false);
     const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
     // URL 파라미터 변경 감지
@@ -94,7 +94,7 @@ export default function BlogClient({
     ) => {
         setFilterType(type);
         setFilterValue(value);
-        setIsMobileFilterOpen(false); // 필터 선택 시 모바일 사이드바 닫기
+        setIsMobileFilterOpen(false);
     };
 
     const getFilterTitle = () => {
@@ -114,7 +114,7 @@ export default function BlogClient({
                 {/* 왼쪽 사이드바 - 데스크톱만 */}
                 <aside className="hidden lg:block w-64 shrink-0">
                     <div className="sticky top-24 space-y-4">
-                        {/* 카테고리 */}
+                        {/* 카테고리 - 기본 펼침 */}
                         <div className="backdrop-blur-2xl bg-white/40 border border-white/60 rounded-2xl shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] overflow-hidden">
                             <button
                                 onClick={() =>
@@ -186,7 +186,7 @@ export default function BlogClient({
                             )}
                         </div>
 
-                        {/* 태그 */}
+                        {/* 태그 - 기본 접힘 */}
                         {initialTags.length > 0 && (
                             <div className="backdrop-blur-2xl bg-white/40 border border-white/60 rounded-2xl shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] overflow-hidden">
                                 <button
@@ -235,7 +235,7 @@ export default function BlogClient({
                             </div>
                         )}
 
-                        {/* 시리즈 */}
+                        {/* 시리즈 - 기본 접힘 */}
                         {initialSeries.length > 0 && (
                             <div className="backdrop-blur-2xl bg-white/40 border border-white/60 rounded-2xl shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] overflow-hidden">
                                 <button
@@ -337,7 +337,6 @@ export default function BlogClient({
             {/* 모바일 필터 사이드바 */}
             {isMobileFilterOpen && (
                 <>
-                    {/* 배경 오버레이 */}
                     <div
                         className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm lg:hidden"
                         onPointerDown={(e) => {
@@ -346,10 +345,8 @@ export default function BlogClient({
                         }}
                     />
 
-                    {/* 사이드바 */}
                     <div className="fixed top-0 left-0 bottom-0 z-50 w-80 max-w-[85vw] backdrop-blur-2xl bg-white/90 border-r border-white/60 shadow-2xl lg:hidden overflow-y-auto">
                         <div className="p-6">
-                            {/* 헤더 */}
                             <div className="flex justify-between items-center mb-6">
                                 <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                                     <SlidersHorizontal size={24} />
@@ -363,9 +360,8 @@ export default function BlogClient({
                                 </button>
                             </div>
 
-                            {/* 필터 내용 */}
                             <div className="space-y-4">
-                                {/* 카테고리 */}
+                                {/* 모바일 카테고리 */}
                                 <div className="backdrop-blur-2xl bg-white/40 border border-white/60 rounded-2xl shadow-sm overflow-hidden">
                                     <button
                                         onClick={() =>
@@ -441,7 +437,7 @@ export default function BlogClient({
                                     )}
                                 </div>
 
-                                {/* 태그 */}
+                                {/* 모바일 태그 - 기본 접힘 */}
                                 {initialTags.length > 0 && (
                                     <div className="backdrop-blur-2xl bg-white/40 border border-white/60 rounded-2xl shadow-sm overflow-hidden">
                                         <button
@@ -499,7 +495,7 @@ export default function BlogClient({
                                     </div>
                                 )}
 
-                                {/* 시리즈 */}
+                                {/* 모바일 시리즈 - 기본 접힘 */}
                                 {initialSeries.length > 0 && (
                                     <div className="backdrop-blur-2xl bg-white/40 border border-white/60 rounded-2xl shadow-sm overflow-hidden">
                                         <button
