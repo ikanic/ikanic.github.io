@@ -73,9 +73,37 @@ func add(_ a: Int, _ b: Int) -> `Int` {
 }
 ```
 
+### 줄 하이라이트 테스트
+
+```javascript {1, 3, 4, 6-7}
+const a = 1;
+const b = 2;
+const c = 3;
+const d = 4;
+const e = 5;
+const f = 6;
+const g = 7;
+```
+
+### 단어 하이라이트 테스트
+
+```javascript
+function add(a, b) {
+    return `a` + `b`;
+}
+```
+
 ## Mermaid 다이어그램
 
 ```mermaid
+graph TD
+    A[Start] --> B[Process]
+    B --> C{Decision}
+    C -->|Yes| D[End]
+    C -->|No| B
+```
+
+```mermaidc
 graph TD
     A[Start] --> B[Process]
     B --> C{Decision}
@@ -172,6 +200,14 @@ graph TD
 HTML 엔티티: &copy; &trade; &reg;
 
 특수 기호: © ® ™ € £ ¥
+
+## 첨자
+
+^^가^^
+,,나,,
+:::toggle 토글 연습
+ㅇ6ㄹㅁ5ㅇㄹ
+:::
 
 ## 마무리
 
