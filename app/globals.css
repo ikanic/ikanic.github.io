@@ -1,6 +1,40 @@
 @import "tailwindcss";
 
-/* 폰트 설정 - iOS Safari 최적화 */
+/* ============================================
+   폰트 설정 - iOS Safari 최적화
+   ============================================ */
+
+/* Pretendard 폰트 - subset으로 최적화 */
+@font-face {
+    font-family: "Pretendard";
+    src: url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/woff2-subset/Pretendard-Regular.subset.woff2")
+        format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+AC00-D7A3, U+0020-007E; /* 한글 + 기본 영문 */
+}
+
+@font-face {
+    font-family: "Pretendard";
+    src: url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/woff2-subset/Pretendard-Bold.subset.woff2")
+        format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+AC00-D7A3, U+0020-007E;
+}
+
+/* D2Coding 폰트 - 코드용 */
+@font-face {
+    font-family: "D2Coding";
+    src: url("https://cdn.jsdelivr.net/gh/wan2land/d2coding/d2coding-subset.woff2")
+        format("woff2");
+    font-display: swap;
+    font-weight: normal;
+}
+
+/* 기본 폰트 설정 */
 * {
     font-family:
         "Pretendard",
@@ -8,13 +42,6 @@
         BlinkMacSystemFont,
         system-ui,
         sans-serif;
-}
-
-/* Pretendard 폰트 최적화 로드 */
-@font-face {
-    font-family: "Pretendard";
-    src: url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css");
-    font-display: swap; /* 폰트 로딩 전 시스템 폰트 사용 */
 }
 
 code,
@@ -25,13 +52,39 @@ samp,
     font-family: "D2Coding", "Courier New", monospace !important;
 }
 
-/* D2Coding 폰트 최적화 로드 */
-@font-face {
-    font-family: "D2Coding";
-    src: url("https://cdn.jsdelivr.net/gh/wan2land/d2coding/d2coding-subset.woff2")
-        format("woff2");
-    font-display: swap;
-    font-weight: normal;
+/* ============================================
+   애니메이션 - iOS Safari 최적화
+   ============================================ */
+
+/* 느린 blob 애니메이션 (부드럽고 성능 좋음) */
+@keyframes blob-slow {
+    0%,
+    100% {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+    33% {
+        transform: translate3d(20px, -30px, 0) scale(1.05);
+    }
+    66% {
+        transform: translate3d(-10px, 15px, 0) scale(0.95);
+    }
+}
+
+/* 부드러운 펄스 애니메이션 (옵션 1용) */
+@keyframes gentle-pulse {
+    0%,
+    100% {
+        opacity: 0.4;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.6;
+        transform: scale(1.1);
+    }
+}
+
+.animate-gentle-pulse {
+    animation: gentle-pulse 15s ease-in-out infinite;
 }
 
 @layer utilities {
@@ -63,29 +116,10 @@ samp,
     }
 }
 
-/* Blob 애니메이션 - iOS Safari GPU 가속 */
-@keyframes blob {
-    0% {
-        transform: translate3d(0px, 0px, 0) scale(1);
-    }
-    33% {
-        transform: translate3d(30px, -50px, 0) scale(1.1);
-    }
-    66% {
-        transform: translate3d(-20px, 20px, 0) scale(0.9);
-    }
-    100% {
-        transform: translate3d(0px, 0px, 0) scale(1);
-    }
-}
+/* ============================================
+   마크다운 스타일링
+   ============================================ */
 
-.animate-blob {
-    animation: blob 7s infinite;
-    transform: translate3d(0, 0, 0); /* GPU 가속 활성화 */
-    backface-visibility: hidden; /* iOS Safari 깜빡임 방지 */
-}
-
-/* 마크다운 스타일링 */
 .prose {
     color: rgb(55, 65, 81);
     max-width: none;
@@ -250,7 +284,7 @@ samp,
     counter-reset: line;
 }
 
-/* 모든 줄에 기본 패딩 (하이라이트 없는 줄과 정렬) */
+/* 모든 줄에 기본 패딩 */
 .code-block-wrapper [data-line] {
     display: block !important;
     padding-left: 4.5rem !important;
@@ -267,7 +301,7 @@ samp,
     padding-left: calc(4.5rem - 4px) !important;
 }
 
-/* 줄 번호 - 모든 경우에 동일한 위치 */
+/* 줄 번호 */
 .code-block-wrapper [data-line] > .line-number {
     display: inline-block !important;
     position: absolute !important;
@@ -351,7 +385,7 @@ samp,
     display: none;
 }
 
-/* 하이라이트 블록 (연속된 줄들) */
+/* 하이라이트 블록 */
 .code-block-wrapper .highlight-block {
     display: inline-block;
     border: 2px solid rgb(236, 72, 153);
@@ -361,7 +395,7 @@ samp,
     background-color: transparent;
 }
 
-/* 그룹의 일부인 하이라이트 블록 - CSS 변수로 너비 설정 */
+/* 그룹의 일부인 하이라이트 블록 */
 .code-block-wrapper .highlight-block-group {
     display: inline-block;
     width: var(--box-width, auto);
@@ -585,6 +619,91 @@ samp,
     opacity: 0.5;
 }
 
+/* ============================================
+   윗첨자 & 아랫첨자 스타일
+   ============================================ */
+
+.prose sup {
+    color: rgb(219, 39, 119);
+    font-weight: 600;
+}
+
+.prose sub {
+    color: rgb(59, 130, 246);
+    font-weight: 600;
+}
+
+/* ============================================
+   토글 (Details/Summary) 스타일
+   ============================================ */
+
+.prose .markdown-toggle {
+    margin: 1.5rem 0;
+    border: 2px solid rgba(59, 130, 246, 0.2);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: rgba(59, 130, 246, 0.05);
+    transition: all 0.3s ease;
+}
+
+.prose .markdown-toggle:hover {
+    border-color: rgba(59, 130, 246, 0.4);
+    background: rgba(59, 130, 246, 0.08);
+}
+
+.prose .markdown-toggle[open] {
+    border-color: rgba(59, 130, 246, 0.5);
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.prose .markdown-toggle-title {
+    padding: 1rem 1.25rem;
+    font-weight: 600;
+    color: rgb(59, 130, 246);
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.prose .markdown-toggle-title:hover {
+    background: rgba(59, 130, 246, 0.1);
+    color: rgb(37, 99, 235);
+}
+
+.prose .markdown-toggle-title::before {
+    content: "▶";
+    display: inline-block;
+    transition: transform 0.3s ease;
+    font-size: 0.75rem;
+}
+
+.prose .markdown-toggle[open] .markdown-toggle-title::before {
+    transform: rotate(90deg);
+}
+
+/* Safari/Chrome에서 기본 마커 숨기기 */
+.prose .markdown-toggle-title::-webkit-details-marker {
+    display: none;
+}
+
+.prose .markdown-toggle-content {
+    padding: 1.25rem;
+    border-top: 1px solid rgba(59, 130, 246, 0.15);
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.prose .markdown-toggle-content > *:first-child {
+    margin-top: 0;
+}
+
+.prose .markdown-toggle-content > *:last-child {
+    margin-bottom: 0;
+}
+
 /* 표 - 모바일 최적화 */
 .prose table {
     width: 100%;
@@ -666,7 +785,7 @@ samp,
 }
 
 /* ===========================
-   Giscus 스타일 커스튜마이징
+   Giscus 스타일 커스터마이징
    =========================== */
 
 /* Giscus 컨테이너 기본 정리 */
@@ -675,14 +794,14 @@ samp,
     padding: 1.5rem;
 }
 
-/* Giscus iframe — border 제거하고 컨테이너와 자연스럽게 붙게 만들기 */
+/* Giscus iframe */
 iframe.giscus-frame {
     width: 100% !important;
     border: none !important;
     color-scheme: light;
 }
 
-/* Giscus 내부 요소들을 글라스모르픽 스타일에 맞춰 조정 */
+/* Giscus 내부 요소들 */
 .giscus-container :is(.gsc-reactions, .gsc-comment-box, .gsc-comment) {
     background: rgba(255, 255, 255, 0.5) !important;
     backdrop-filter: blur(12px) !important;
@@ -692,23 +811,31 @@ iframe.giscus-frame {
 
 /* iframe 내부 스타일 커스터마이징을 위한 CSS 변수 오버라이드 */
 .giscus-frame {
-    /* 텍스트 색상 진하게 */
     --color-text-primary: rgb(17, 24, 39) !important;
     --color-text-secondary: rgb(55, 65, 81) !important;
     --color-text-tertiary: rgb(75, 85, 99) !important;
 
-    /* 정렬 버튼 배경 - 분홍 계열 */
+    /* 버튼 배경 - 분홍 계열 */
     --color-btn-bg: rgba(236, 72, 153, 0.15) !important;
     --color-btn-border: rgba(236, 72, 153, 0.3) !important;
     --color-btn-text: rgb(190, 24, 93) !important;
     --color-btn-hover-bg: rgba(236, 72, 153, 0.25) !important;
     --color-btn-hover-border: rgba(236, 72, 153, 0.4) !important;
-
-    /* 선택된 버튼 */
     --color-btn-selected-bg: rgba(236, 72, 153, 0.3) !important;
     --color-btn-selected-border: rgba(236, 72, 153, 0.5) !important;
 
     /* 링크 색상 */
     --color-accent-fg: rgb(219, 39, 119) !important;
     --color-accent-emphasis: rgb(190, 24, 93) !important;
+
+    /* 테두리 색상 - 분홍색으로 통일 (PC/모바일 모두) */
+    --color-border-default: rgba(236, 72, 153, 0.3) !important;
+    --color-border-muted: rgba(236, 72, 153, 0.2) !important;
+    --color-border-subtle: rgba(236, 72, 153, 0.15) !important;
+
+    /* 댓글 박스 테두리 */
+    --color-canvas-default: transparent !important;
+    --color-canvas-overlay: rgba(255, 255, 255, 0.5) !important;
+    --color-canvas-inset: rgba(255, 255, 255, 0.3) !important;
+    --color-canvas-subtle: rgba(255, 255, 255, 0.2) !important;
 }

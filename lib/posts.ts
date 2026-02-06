@@ -25,11 +25,11 @@ export interface PostData {
     description?: string;
     thumbnail?: string;
     content?: string;
-    readingTime?: string; // 독서 시간 (예: "5분")
-    readingMinutes?: number; // 독서 시간 (숫자)
+    readingTime?: string;
+    readingMinutes?: number;
 }
 
-// 날짜 포맷 파싱 (2026-01-08(목) 00:01:32.000 -> 2026-01-08)
+// 날짜 포맷 파싱
 function parseDate(dateStr: string): string {
     if (!dateStr) return new Date().toISOString().split("T")[0];
     const match = dateStr.match(/(\d{4}-\d{2}-\d{2})/);
@@ -39,6 +39,41 @@ function parseDate(dateStr: string): string {
 // 정렬용 날짜 가져오기
 function getSortDate(post: PostData): string {
     return post.modifiedDate || post.createdDate;
+}
+
+// 커스텀 마크다운 문법 처리
+function processCustomSyntax(content: string): string {
+    let processed = content;
+
+    // 1. 윗첨자: ^^내용^^ -> <sup>내용</sup>
+    // 이스케이프된 경우(\^\^)는 제외
+    processed = processed.replace(/(?<!\\)\^\^([^\^]+)\^\^/g, "<sup>$1</sup>");
+
+    // 2. 아랫첨자: ,,내용,, -> <sub>내용</sub>
+    // 이스케이프된 경우(\,\,)는 제외
+    processed = processed.replace(/(?<!\\),,([^,]+),,/g, "<sub>$1</sub>");
+
+    // 3. 이스케이프 처리 제거
+    processed = processed.replace(/\\\^\^/g, "^^");
+    processed = processed.replace(/\\,,/g, ",,");
+
+    // 4. 토글 문법: :::toggle 제목\n내용\n:::
+    processed = processed.replace(
+        /:::toggle\s+(.+?)\n([\s\S]+?)\n:::/g,
+        (match, title, content) => {
+            const toggleId = `toggle-${Math.random().toString(36).substr(2, 9)}`;
+            return `<details class="markdown-toggle">
+<summary class="markdown-toggle-title">${title.trim()}</summary>
+<div class="markdown-toggle-content">
+
+${content.trim()}
+
+</div>
+</details>`;
+        },
+    );
+
+    return processed;
 }
 
 // 모든 포스트 가져오기
@@ -59,7 +94,6 @@ export function getAllPosts(): PostData[] {
                 const fileContents = fs.readFileSync(fullPath, "utf8");
                 const { data, content } = matter(fileContents);
 
-                // 독서 시간 계산
                 const readingTimeResult = getReadingTimeFromMarkdown(content);
 
                 return {
@@ -96,14 +130,16 @@ export async function getPostBySlug(slug: string): Promise<PostData | null> {
         const fileContents = fs.readFileSync(fullPath, "utf8");
         const { data, content } = matter(fileContents);
 
-        // 독서 시간 계산
         const readingTimeResult = getReadingTimeFromMarkdown(content);
 
-        // 전처리: 코드 블록 내 \`를 특수 마커로 치환
-        const ESCAPED_BACKTICK_MARKER = "___ESC_BT___";
-        let preprocessedContent = content;
+        // 커스텀 문법 처리
+        const processedContent = processCustomSyntax(content);
 
-        // 코드 블록 내에서만 \`를 마커로 치환 (하이라이트 메타 포함)
+        // 이스케이프된 백틱 마커
+        const ESCAPED_BACKTICK_MARKER = "___ESC_BT___";
+        let preprocessedContent = processedContent;
+
+        // 코드 블록 내 이스케이프된 백틱 처리
         preprocessedContent = preprocessedContent.replace(
             /^( *)```(\w+)(?:\s+\{([^}]+)\})?\n([\s\S]*?)\n\1```/gm,
             (match, indent, lang, highlight, codeContent) => {
@@ -120,7 +156,7 @@ export async function getPostBySlug(slug: string): Promise<PostData | null> {
         const blockMeta = new Map<string, string>();
         const backtickMap = new Map<string, string>();
 
-        // 1단계: 코드 블록 감지 및 백틱 보호
+        // 코드 블록 감지 및 백틱 보호
         const contentWithProtectedBackticks = preprocessedContent.replace(
             /^( *)```(\w+)(?:\s+\{([^}]+)\})?\n([\s\S]*?)\n\1```/gm,
             (match, indent, lang, highlight, codeContent) => {
@@ -129,7 +165,6 @@ export async function getPostBySlug(slug: string): Promise<PostData | null> {
                     blockMeta.set(id, highlight);
                 }
 
-                // 백틱 패턴을 마커로 치환
                 let markerIndex = 0;
                 const protectedCode = codeContent.replace(
                     /`([^`]+)`/g,
@@ -144,9 +179,9 @@ export async function getPostBySlug(slug: string): Promise<PostData | null> {
             },
         );
 
-        // 2단계: 마크다운 -> HTML 변환
+        // 마크다운 -> HTML 변환
         // @ts-ignore
-        const processedContent = await unified()
+        const processedContentHtml = await unified()
             .use(remarkParse)
             .use(remarkGfm)
             // @ts-ignore
@@ -160,9 +195,9 @@ export async function getPostBySlug(slug: string): Promise<PostData | null> {
             .use(rehypeStringify, { allowDangerousHtml: true })
             .process(contentWithProtectedBackticks);
 
-        let contentHtml = processedContent.toString();
+        let contentHtml = processedContentHtml.toString();
 
-        // 3단계: HTML에서 주석 찾아서 해당 <pre>에 메타 정보 추가
+        // 메타 정보 추가
         contentHtml = contentHtml.replace(
             /<!--\s*(cb\d+)\s*-->\s*<figure[^>]*>[\s\S]*?<pre/g,
             (match, id) => {
@@ -177,19 +212,14 @@ export async function getPostBySlug(slug: string): Promise<PostData | null> {
             },
         );
 
-        // 4단계: 백틱 마커 복원 - 올바른 색상 찾기
-
+        // 백틱 마커 복원
         backtickMap.forEach((backtickContent, marker) => {
             if (!contentHtml.includes(marker)) {
                 return;
             }
 
-            // 🔥 핵심: backtickContent 자체를 HTML에서 찾아서 색상 추출
-            // 예: "Int" → <span style="color:#79B8FF">Int</span>
-
             let extractedColor = null;
 
-            // 방법 1: 정확히 backtickContent를 포함하는 span 찾기
             const escapedWord = backtickContent.replace(
                 /[.*+?^${}()|[\]\\]/g,
                 "\\$&",
@@ -209,7 +239,6 @@ export async function getPostBySlug(slug: string): Promise<PostData | null> {
                 }
             }
 
-            // 방법 2: 못 찾았다면 부분 매칭 시도
             if (!extractedColor) {
                 const partialMatchRegex = new RegExp(
                     `<span[^>]*style="[^"]*color:\\s*(#[A-Fa-f0-9]{6}|rgb\\([^)]+\\))[^"]*"[^>]*>[^<]*${escapedWord}[^<]*<\\/span>`,
@@ -227,22 +256,6 @@ export async function getPostBySlug(slug: string): Promise<PostData | null> {
                 }
             }
 
-            // 방법 3: 마커 근처 span의 색상 사용 (fallback)
-            if (!extractedColor) {
-                const markerIndex = contentHtml.indexOf(marker);
-                const beforeMarker = contentHtml.substring(
-                    Math.max(0, markerIndex - 200),
-                    markerIndex,
-                );
-                const colorMatch = beforeMarker.match(
-                    /color:\s*(#[A-Fa-f0-9]{6}|rgb\([^)]+\))[^"]*"[^>]*>(?!.*color)/,
-                );
-                if (colorMatch) {
-                    extractedColor = colorMatch[1];
-                }
-            }
-
-            // 마커를 mark 태그로 교체
             const escapedMarker = marker.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
             const markTag = extractedColor
                 ? `<mark class="code-word-highlight" style="color:${extractedColor}">${backtickContent}</mark>`
@@ -254,7 +267,7 @@ export async function getPostBySlug(slug: string): Promise<PostData | null> {
             );
         });
 
-        // 5단계: 이스케이프된 백틱 마커를 그레이브 악센트(ˋ)로 교체
+        // 이스케이프된 백틱 마커를 그레이브 악센트로 교체
         contentHtml = contentHtml.replace(/___ESC_BT___/g, "ˋ");
 
         return {
