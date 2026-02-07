@@ -303,100 +303,121 @@ export default function CodeBlockEnhancer() {
                                 },
                             );
 
-                            if (contentNodes.length === 0) {
-                                // 빈 줄 - 공백 노드 하나 추가
-                                const spaceNode = document.createTextNode(" ");
-                                contentNodes.push(spaceNode);
-                            }
+                            // 빈 줄 처리 - 콘텐츠가 없거나 공백만 있으면
+                            const isEmpty =
+                                contentNodes.length === 0 ||
+                                contentNodes.every((node) => {
+                                    const text = node.textContent || "";
+                                    return text.trim() === "";
+                                });
 
                             const whitespaceNodes: ChildNode[] = [];
                             const realContentNodes: ChildNode[] = [];
-                            let foundNonWhitespace = false;
 
-                            contentNodes.forEach((node) => {
-                                const nodeText = node.textContent || "";
+                            if (isEmpty) {
+                                // 빈 줄: non-breaking space 추가
+                                realContentNodes.push(
+                                    document.createTextNode("\u00A0"),
+                                );
+                            } else {
+                                // 일반 줄: 공백과 콘텐츠 분리
+                                let foundNonWhitespace = false;
 
-                                if (!foundNonWhitespace) {
-                                    if (/^\s*$/.test(nodeText)) {
-                                        whitespaceNodes.push(
-                                            node.cloneNode(true) as ChildNode,
-                                        );
-                                        return;
-                                    }
+                                contentNodes.forEach((node) => {
+                                    const nodeText = node.textContent || "";
 
-                                    if (/^\s/.test(nodeText)) {
-                                        if (node.nodeType === Node.TEXT_NODE) {
-                                            const match =
-                                                nodeText.match(/^(\s+)(.*)$/);
-                                            if (match && match[2]) {
-                                                whitespaceNodes.push(
-                                                    document.createTextNode(
-                                                        match[1],
-                                                    ),
-                                                );
-                                                realContentNodes.push(
-                                                    document.createTextNode(
-                                                        match[2],
-                                                    ),
-                                                );
-                                                foundNonWhitespace = true;
-                                                return;
-                                            }
-                                        } else if (
-                                            node.nodeType === Node.ELEMENT_NODE
-                                        ) {
-                                            const element = node as HTMLElement;
-                                            const firstChild =
-                                                element.firstChild;
+                                    if (!foundNonWhitespace) {
+                                        if (/^\s*$/.test(nodeText)) {
+                                            whitespaceNodes.push(
+                                                node.cloneNode(
+                                                    true,
+                                                ) as ChildNode,
+                                            );
+                                            return;
+                                        }
 
+                                        if (/^\s/.test(nodeText)) {
                                             if (
-                                                firstChild &&
-                                                firstChild.nodeType ===
-                                                    Node.TEXT_NODE
+                                                node.nodeType === Node.TEXT_NODE
                                             ) {
-                                                const text =
-                                                    firstChild.textContent ||
-                                                    "";
                                                 const match =
-                                                    text.match(/^(\s+)(.*)$/);
-
-                                                if (match && match[2]) {
-                                                    const wsSpan =
-                                                        element.cloneNode(
-                                                            false,
-                                                        ) as HTMLElement;
-                                                    wsSpan.textContent =
-                                                        match[1];
-                                                    whitespaceNodes.push(
-                                                        wsSpan,
+                                                    nodeText.match(
+                                                        /^(\s+)(.*)$/,
                                                     );
-
-                                                    const contentSpan =
-                                                        element.cloneNode(
-                                                            true,
-                                                        ) as HTMLElement;
-                                                    if (
-                                                        contentSpan.firstChild
-                                                    ) {
-                                                        contentSpan.firstChild.textContent =
-                                                            match[2];
-                                                    }
+                                                if (match && match[2]) {
+                                                    whitespaceNodes.push(
+                                                        document.createTextNode(
+                                                            match[1],
+                                                        ),
+                                                    );
                                                     realContentNodes.push(
-                                                        contentSpan,
+                                                        document.createTextNode(
+                                                            match[2],
+                                                        ),
                                                     );
                                                     foundNonWhitespace = true;
                                                     return;
                                                 }
+                                            } else if (
+                                                node.nodeType ===
+                                                Node.ELEMENT_NODE
+                                            ) {
+                                                const element =
+                                                    node as HTMLElement;
+                                                const firstChild =
+                                                    element.firstChild;
+
+                                                if (
+                                                    firstChild &&
+                                                    firstChild.nodeType ===
+                                                        Node.TEXT_NODE
+                                                ) {
+                                                    const text =
+                                                        firstChild.textContent ||
+                                                        "";
+                                                    const match =
+                                                        text.match(
+                                                            /^(\s+)(.*)$/,
+                                                        );
+
+                                                    if (match && match[2]) {
+                                                        const wsSpan =
+                                                            element.cloneNode(
+                                                                false,
+                                                            ) as HTMLElement;
+                                                        wsSpan.textContent =
+                                                            match[1];
+                                                        whitespaceNodes.push(
+                                                            wsSpan,
+                                                        );
+
+                                                        const contentSpan =
+                                                            element.cloneNode(
+                                                                true,
+                                                            ) as HTMLElement;
+                                                        if (
+                                                            contentSpan.firstChild
+                                                        ) {
+                                                            contentSpan.firstChild.textContent =
+                                                                match[2];
+                                                        }
+                                                        realContentNodes.push(
+                                                            contentSpan,
+                                                        );
+                                                        foundNonWhitespace = true;
+                                                        return;
+                                                    }
+                                                }
                                             }
                                         }
                                     }
-                                }
 
-                                foundNonWhitespace = true;
-                                realContentNodes.push(
-                                    node.cloneNode(true) as ChildNode,
-                                );
-                            });
+                                    foundNonWhitespace = true;
+                                    realContentNodes.push(
+                                        node.cloneNode(true) as ChildNode,
+                                    );
+                                });
+                            }
 
                             const highlightBlock =
                                 document.createElement("span");
@@ -519,10 +540,19 @@ export default function CodeBlockEnhancer() {
                                     },
                                 );
 
-                                if (contentNodes.length === 0) {
-                                    // 빈 줄
+                                // 빈 줄 여부 확인
+                                const isEmpty =
+                                    contentNodes.length === 0 ||
+                                    contentNodes.every((node) => {
+                                        const text = node.textContent || "";
+                                        return text.trim() === "";
+                                    });
+
+                                if (isEmpty) {
+                                    // 빈 줄: non-breaking space로 교체
+                                    contentNodes.length = 0;
                                     contentNodes.push(
-                                        document.createTextNode(" "),
+                                        document.createTextNode("\u00A0"),
                                     );
                                 }
 

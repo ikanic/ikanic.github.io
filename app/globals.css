@@ -393,6 +393,8 @@ samp,
     padding: 0 4px;
     margin: -2px 0;
     background-color: transparent;
+    min-height: 1.7em;
+    min-width: 1ch;
 }
 
 /* 그룹의 일부인 하이라이트 블록 */
@@ -406,6 +408,7 @@ samp,
     border-right: 2px solid rgb(236, 72, 153);
     border-top: none;
     border-bottom: none;
+    min-height: 1.7em;
 }
 
 /* 그룹의 첫 번째 블록 */
@@ -599,7 +602,8 @@ samp,
 }
 
 /* 문구 인용 - 큰따옴표 스타일 */
-.prose .markdown-quote-block {
+.prose .markdown-quote,
+.prose blockquote.markdown-quote {
     position: relative;
     background: linear-gradient(
         135deg,
@@ -608,42 +612,46 @@ samp,
     );
     border: none;
     border-radius: 1rem;
-    padding: 3rem 2rem 2rem 2rem;
+    padding: 3.5rem 2rem 2rem 2rem;
     margin: 2rem 0;
     text-align: center;
     font-style: italic;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-.prose .markdown-quote-block::before {
-    content: '"';
+.prose .markdown-quote::before,
+.prose blockquote.markdown-quote::before {
+    content: "";
     position: absolute;
-    top: -0.5rem;
+    top: 1rem;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 5rem;
-    color: rgb(236, 72, 153);
-    font-family: Georgia, serif;
-    line-height: 1;
-    opacity: 0.5;
+    width: 50px;
+    height: 35px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 70'%3E%3Cpath d='M15,45 Q15,20 25,15 Q28,13 28,18 Q28,28 18,35 Q15,38 15,45 L15,60 Q15,63 18,63 Q21,63 21,60 L21,45' fill='%23ec4899' fill-opacity='0.5'/%3E%3Cpath d='M50,45 Q50,20 60,15 Q63,13 63,18 Q63,28 53,35 Q50,38 50,45 L50,60 Q50,63 53,63 Q56,63 56,60 L56,45' fill='%23ec4899' fill-opacity='0.5'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
-.prose .markdown-quote-block .markdown-quote-content {
+.prose .markdown-quote p,
+.prose blockquote.markdown-quote p {
     font-size: 1.125rem;
     line-height: 1.75;
     color: rgb(17, 24, 39);
     font-weight: 500;
+    margin: 0;
 }
 
-/* 경고/에러/정보 블록 */
-.prose .markdown-alert {
+/* 경고/에러/정보 블록 - div 기반 */
+.prose .markdown-callout {
     border-radius: 0.75rem;
     padding: 1rem 1.25rem;
     margin: 1.5rem 0;
     border-left: 4px solid;
 }
 
-.prose .markdown-alert-title {
+.prose .markdown-callout-title {
     font-weight: 700;
     font-size: 1rem;
     margin-bottom: 0.75rem;
@@ -652,76 +660,77 @@ samp,
     gap: 0.5rem;
 }
 
-.prose .markdown-alert-content {
+.prose .markdown-callout-content {
     font-size: 0.95rem;
     line-height: 1.6;
 }
 
-.prose .markdown-alert-content p {
+.prose .markdown-callout-content p {
     margin: 0.5rem 0;
+    color: inherit;
 }
 
-.prose .markdown-alert-content p:first-child {
+.prose .markdown-callout-content p:first-child {
     margin-top: 0;
 }
 
-.prose .markdown-alert-content p:last-child {
+.prose .markdown-callout-content p:last-child {
     margin-bottom: 0;
 }
 
 /* 경고 블록 - 노란색 */
-.prose .markdown-alert-warning {
+.prose .markdown-callout.markdown-warning {
     background-color: rgba(251, 191, 36, 0.1);
     border-left-color: rgb(251, 191, 36);
 }
 
-.prose .markdown-alert-warning .markdown-alert-title {
+.prose .markdown-callout.markdown-warning .markdown-callout-title {
     color: rgb(161, 98, 7);
 }
 
-.prose .markdown-alert-warning .markdown-alert-content {
+.prose .markdown-callout.markdown-warning .markdown-callout-content {
     color: rgb(120, 53, 15);
 }
 
 /* 에러 블록 - 빨간색 */
-.prose .markdown-alert-error {
+.prose .markdown-callout.markdown-error {
     background-color: rgba(239, 68, 68, 0.1);
     border-left-color: rgb(239, 68, 68);
 }
 
-.prose .markdown-alert-error .markdown-alert-title {
+.prose .markdown-callout.markdown-error .markdown-callout-title {
     color: rgb(185, 28, 28);
 }
 
-.prose .markdown-alert-error .markdown-alert-content {
+.prose .markdown-callout.markdown-error .markdown-callout-content {
     color: rgb(127, 29, 29);
 }
 
 /* 정보 블록 - 파란색 */
-.prose .markdown-alert-info {
+.prose .markdown-callout.markdown-info {
     background-color: rgba(59, 130, 246, 0.1);
     border-left-color: rgb(59, 130, 246);
 }
 
-.prose .markdown-alert-info .markdown-alert-title {
+.prose .markdown-callout.markdown-info .markdown-callout-title {
     color: rgb(29, 78, 216);
 }
 
-.prose .markdown-alert-info .markdown-alert-content {
+.prose .markdown-callout.markdown-info .markdown-callout-content {
     color: rgb(30, 58, 138);
 }
 
 /* 성공 블록 - 초록색 */
-.prose .markdown-alert-success {
+.prose .markdown-callout.markdown-success {
     background-color: rgba(34, 197, 94, 0.1);
     border-left-color: rgb(34, 197, 94);
 }
 
-.prose .markdown-alert-success .markdown-alert-title {
+.prose .markdown-callout.markdown-success .markdown-callout-title {
     color: rgb(21, 128, 61);
 }
 
-.prose .markdown-alert-success .markdown-alert-content {
+.prose .markdown-callout.markdown-success .markdown-callout-content {
     color: rgb(20, 83, 45);
 }
 
@@ -776,6 +785,31 @@ samp,
     border-radius: 0.75rem;
     margin: 1.5rem 0;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* 이미지 & 비디오 미디어 컨테이너 */
+.prose .markdown-media {
+    margin: 2rem auto;
+    text-align: center;
+    max-width: 100%;
+}
+
+.prose .markdown-media img,
+.prose .markdown-media video {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.prose .markdown-caption {
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
+    color: rgb(107, 114, 128);
+    font-style: italic;
+    text-align: center;
 }
 
 /* 구분선 */

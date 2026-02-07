@@ -45,17 +45,130 @@ function getSortDate(post: PostData): string {
 function processCustomSyntax(content: string): string {
     let processed = content;
 
-    // 1. 윗첨자: ^^내용^^ -> <sup>내용</sup>
+    // 0. 비디오 삽입: !![alt|options](url)
+    // 예: !![설명|caption=제목,width=30,height=20](url)
+    processed = processed.replace(
+        /!!\[([^\]]*)\]\(([^)]+)\)/g,
+        (match, altAndOptions, url) => {
+            let alt = "";
+            let caption = "";
+            let width = "";
+            let height = "";
+
+            // 이스케이프된 파이프(\|)가 있는지 확인
+            if (altAndOptions.includes("\\|")) {
+                // 이스케이프된 경우: alt에 전체 포함
+                alt = altAndOptions.replace(/\\\|/g, "|");
+            } else if (altAndOptions.includes("|")) {
+                // 파이프로 분리
+                const pipeParts = altAndOptions.split("|");
+                alt = pipeParts[0].trim();
+                const options = pipeParts[1] || "";
+
+                // 옵션 파싱
+                const optionPairs = options.split(",");
+                optionPairs.forEach((pair: string) => {
+                    const eqParts = pair.split("=");
+                    if (eqParts.length === 2) {
+                        const key = eqParts[0].trim();
+                        const value = eqParts[1].trim();
+                        if (key === "caption") caption = value;
+                        else if (key === "width") width = value;
+                        else if (key === "height") height = value;
+                    }
+                });
+            } else {
+                alt = altAndOptions;
+            }
+
+            const style = [];
+            if (width)
+                style.push(`width: ${width}${width.match(/\d$/) ? "px" : ""}`);
+            if (height)
+                style.push(
+                    `height: ${height}${height.match(/\d$/) ? "px" : ""}`,
+                );
+
+            let html = '<figure class="markdown-media">\n';
+            html += `<video${style.length > 0 ? ` style="${style.join("; ")}"` : ""} controls>\n`;
+            html += `  <source src="${url}" />\n`;
+            html += `  ${alt}\n`;
+            html += "</video>\n";
+            if (caption) {
+                html += `<figcaption class="markdown-caption">${caption}</figcaption>\n`;
+            }
+            html += "</figure>";
+
+            return html;
+        },
+    );
+
+    // 1. 이미지 삽입 개선: ![alt|options](url)
+    // 예: ![설명|caption=제목,width=30,height=20](url)
+    processed = processed.replace(
+        /!\[([^\]]*)\]\(([^)]+)\)/g,
+        (match, altAndOptions, url) => {
+            let alt = "";
+            let caption = "";
+            let width = "";
+            let height = "";
+
+            // 이스케이프된 파이프(\|)가 있는지 확인
+            if (altAndOptions.includes("\\|")) {
+                // 이스케이프된 경우: alt에 전체 포함
+                alt = altAndOptions.replace(/\\\|/g, "|");
+            } else if (altAndOptions.includes("|")) {
+                // 파이프로 분리
+                const pipeParts = altAndOptions.split("|");
+                alt = pipeParts[0].trim();
+                const options = pipeParts[1] || "";
+
+                // 옵션 파싱
+                const optionPairs = options.split(",");
+                optionPairs.forEach((pair: string) => {
+                    const eqParts = pair.split("=");
+                    if (eqParts.length === 2) {
+                        const key = eqParts[0].trim();
+                        const value = eqParts[1].trim();
+                        if (key === "caption") caption = value;
+                        else if (key === "width") width = value;
+                        else if (key === "height") height = value;
+                    }
+                });
+            } else {
+                alt = altAndOptions;
+            }
+
+            const style = [];
+            if (width)
+                style.push(`width: ${width}${width.match(/\d$/) ? "px" : ""}`);
+            if (height)
+                style.push(
+                    `height: ${height}${height.match(/\d$/) ? "px" : ""}`,
+                );
+
+            let html = '<figure class="markdown-media">\n';
+            html += `<img src="${url}" alt="${alt}"${style.length > 0 ? ` style="${style.join("; ")}"` : ""} />\n`;
+            if (caption) {
+                html += `<figcaption class="markdown-caption">${caption}</figcaption>\n`;
+            }
+            html += "</figure>";
+
+            return html;
+        },
+    );
+
+    // 2. 윗첨자: ^^내용^^ -> <sup>내용</sup>
     processed = processed.replace(/(?<!\\)\^\^([^\^]+)\^\^/g, "<sup>$1</sup>");
 
-    // 2. 아랫첨자: ,,내용,, -> <sub>내용</sub>
+    // 3. 아랫첨자: ,,내용,, -> <sub>내용</sub>
     processed = processed.replace(/(?<!\\),,([^,]+),,/g, "<sub>$1</sub>");
 
-    // 3. 이스케이프 처리 제거
+    // 4. 이스케이프 처리 제거
     processed = processed.replace(/\\\^\^/g, "^^");
     processed = processed.replace(/\\,,/g, ",,");
 
-    // 4. 문구 인용: :::quote\n내용\n::: -> 큰따옴표 스타일
+    // 5. 문구 인용: :::quote\n내용\n::: -> 큰따옴표 스타일
     processed = processed.replace(
         /:::quote\s*\n([\s\S]+?)\n:::/g,
         (match, content) => {
@@ -65,7 +178,7 @@ ${content.trim()}
         },
     );
 
-    // 5. 경고 블록: :::warning 제목\n내용\n:::
+    // 6. 경고 블록: :::warning 제목\n내용\n:::
     processed = processed.replace(
         /:::warning\s+(.+?)\n([\s\S]+?)\n:::/g,
         (match, title, content) => {
@@ -80,7 +193,7 @@ ${content.trim()}
         },
     );
 
-    // 6. 에러 블록: :::error 제목\n내용\n:::
+    // 7. 에러 블록: :::error 제목\n내용\n:::
     processed = processed.replace(
         /:::error\s+(.+?)\n([\s\S]+?)\n:::/g,
         (match, title, content) => {
@@ -95,7 +208,7 @@ ${content.trim()}
         },
     );
 
-    // 7. 정보 블록: :::info 제목\n내용\n:::
+    // 8. 정보 블록: :::info 제목\n내용\n:::
     processed = processed.replace(
         /:::info\s+(.+?)\n([\s\S]+?)\n:::/g,
         (match, title, content) => {
@@ -110,7 +223,7 @@ ${content.trim()}
         },
     );
 
-    // 8. 성공 블록: :::success 제목\n내용\n:::
+    // 9. 성공 블록: :::success 제목\n내용\n:::
     processed = processed.replace(
         /:::success\s+(.+?)\n([\s\S]+?)\n:::/g,
         (match, title, content) => {
@@ -125,7 +238,7 @@ ${content.trim()}
         },
     );
 
-    // 9. 토글: :::toggle 제목\n내용\n:::
+    // 10. 토글: :::toggle 제목\n내용\n:::
     processed = processed.replace(
         /:::toggle\s+(.+?)\n([\s\S]+?)\n:::/g,
         (match, title, content) => {
@@ -140,7 +253,7 @@ ${content.trim()}
         },
     );
 
-    // 10. 테이블 셀 병합 처리
+    // 11. 테이블 셀 병합 처리
     processed = processTableMerge(processed);
 
     return processed;
@@ -148,83 +261,128 @@ ${content.trim()}
 
 // 테이블 셀 병합 처리 함수
 function processTableMerge(content: string): string {
-    // 테이블 전체를 찾아서 처리
-    return content.replace(/(\|[^\n]+\|\n)+/g, (tableMatch) => {
-        const lines = tableMatch.trim().split("\n");
-        if (lines.length < 2) return tableMatch;
+    // 마크다운 테이블 패턴 찾기
+    const tablePattern = /(\|[^\n]+\|\n)(\|[\s:|-]+\|\n)((?:\|[^\n]+\|\n?)+)/g;
 
-        // 테이블 헤더와 구분선 확인
-        const hasHeader = lines[1].match(/^\|[\s:-]+\|$/);
-        if (!hasHeader) return tableMatch;
+    return content.replace(tablePattern, (match, header, separator, body) => {
+        // 병합 태그가 없으면 원본 반환
+        if (!match.includes("<-") && !match.includes("<!")) {
+            return match;
+        }
 
-        const headerLine = lines[0];
-        const separatorLine = lines[1];
-        const bodyLines = lines.slice(2);
+        console.log("Processing table:", { header, body });
 
-        // HTML 테이블로 변환
-        let html = '<table class="markdown-table-merged">\n';
+        // 헤더 파싱
+        const headerCells = header
+            .trim()
+            .split("|")
+            .slice(1, -1)
+            .map((c: string) => c.trim());
 
-        // 헤더 처리
-        const headerCells = parseTableRow(headerLine);
-        html += "<thead><tr>\n";
+        // 본문 라인 파싱
+        const bodyLines = body
+            .trim()
+            .split("\n")
+            .map((line: string) => {
+                return line
+                    .split("|")
+                    .slice(1, -1)
+                    .map((c: string) => c.trim());
+            });
+
+        console.log("Parsed header:", headerCells);
+        console.log("Parsed body:", bodyLines);
+
+        // HTML 테이블 생성
+        let html = '\n<table class="markdown-table-merged">\n';
+
+        // 헤더 생성
+        html += "<thead>\n<tr>\n";
         let skipCols = 0;
-        for (let i = 0; i < headerCells.length; i++) {
+        headerCells.forEach((cell: string, idx: number) => {
             if (skipCols > 0) {
                 skipCols--;
-                continue;
+                return;
             }
-            const { content, colspan, rowspan } = parseCellMerge(
-                headerCells[i],
-            );
-            html += `<th${colspan > 1 ? ` colspan="${colspan}"` : ""}${rowspan > 1 ? ` rowspan="${rowspan}"` : ""}>${content}</th>\n`;
+
+            const {
+                content: cellContent,
+                colspan,
+                rowspan,
+            } = parseCellMerge(cell);
+            console.log(`Header cell ${idx}:`, {
+                cellContent,
+                colspan,
+                rowspan,
+            });
+
+            const attrs = [];
+            if (colspan > 1) attrs.push(`colspan="${colspan}"`);
+            if (rowspan > 1) attrs.push(`rowspan="${rowspan}"`);
+
+            html += `  <th${attrs.length > 0 ? " " + attrs.join(" ") : ""}>${cellContent}</th>\n`;
             skipCols = colspan - 1;
-        }
-        html += "</tr></thead>\n";
+        });
+        html += "</tr>\n</thead>\n";
 
-        // 바디 처리
+        // 본문 생성
         html += "<tbody>\n";
-        const skipRows: Set<string> = new Set(); // "row-col" 형식으로 저장
+        const skipCells = new Map<string, boolean>();
 
-        for (let rowIdx = 0; rowIdx < bodyLines.length; rowIdx++) {
-            const cells = parseTableRow(bodyLines[rowIdx]);
+        bodyLines.forEach((cells: string[], rowIdx: number) => {
             html += "<tr>\n";
-            let skipCols = 0;
 
-            for (let colIdx = 0; colIdx < cells.length; colIdx++) {
-                const key = `${rowIdx}-${colIdx}`;
-                if (skipRows.has(key) || skipCols > 0) {
-                    if (skipCols > 0) skipCols--;
+            let colIdx = 0;
+            let cellIdx = 0;
+
+            while (cellIdx < cells.length || colIdx < 10) {
+                // 최대 10칸까지
+                // 병합으로 건너뛸 셀인지 확인
+                if (skipCells.get(`${rowIdx}-${colIdx}`)) {
+                    colIdx++;
                     continue;
                 }
 
-                const { content, colspan, rowspan } = parseCellMerge(
-                    cells[colIdx],
-                );
-                html += `<td${colspan > 1 ? ` colspan="${colspan}"` : ""}${rowspan > 1 ? ` rowspan="${rowspan}"` : ""}>${content}</td>\n`;
+                // 더 이상 셀이 없으면 종료
+                if (cellIdx >= cells.length) break;
+
+                const cell = cells[cellIdx];
+                const {
+                    content: cellContent,
+                    colspan,
+                    rowspan,
+                } = parseCellMerge(cell);
+
+                console.log(`Body cell [${rowIdx}][${colIdx}]:`, {
+                    cellContent,
+                    colspan,
+                    rowspan,
+                });
+
+                const attrs = [];
+                if (colspan > 1) attrs.push(`colspan="${colspan}"`);
+                if (rowspan > 1) attrs.push(`rowspan="${rowspan}"`);
+
+                html += `  <td${attrs.length > 0 ? " " + attrs.join(" ") : ""}>${cellContent}</td>\n`;
 
                 // 병합된 셀의 위치 기록
                 for (let r = 0; r < rowspan; r++) {
                     for (let c = 0; c < colspan; c++) {
                         if (r === 0 && c === 0) continue;
-                        skipRows.add(`${rowIdx + r}-${colIdx + c}`);
+                        skipCells.set(`${rowIdx + r}-${colIdx + c}`, true);
                     }
                 }
 
-                skipCols = colspan - 1;
+                colIdx += colspan;
+                cellIdx++;
             }
-            html += "</tr>\n";
-        }
-        html += "</tbody>\n</table>\n";
 
+            html += "</tr>\n";
+        });
+
+        html += "</tbody>\n</table>\n";
         return html;
     });
-}
-
-function parseTableRow(row: string): string[] {
-    return row
-        .split("|")
-        .slice(1, -1)
-        .map((cell) => cell.trim());
 }
 
 function parseCellMerge(cell: string): {
@@ -232,22 +390,22 @@ function parseCellMerge(cell: string): {
     colspan: number;
     rowspan: number;
 } {
+    let content = cell.trim();
     let colspan = 1;
     let rowspan = 1;
-    let content = cell;
 
-    // <-n> 형태 찾기 (오른쪽 병합)
+    // <-n> 패턴 (가로 병합) - n칸 차지
     const colspanMatch = content.match(/<-(\d+)>/);
     if (colspanMatch) {
-        colspan = parseInt(colspanMatch[1]) + 1; // n개 병합 = 자신 포함 n+1
-        content = content.replace(/<-\d+>/, "").trim();
+        colspan = parseInt(colspanMatch[1]);
+        content = content.replace(/<-\d+>/g, "").trim();
     }
 
-    // <|n> 형태 찾기 (아래쪽 병합)
-    const rowspanMatch = content.match(/<\|(\d+)>/);
+    // <!n> 패턴 (세로 병합) - n칸 차지
+    const rowspanMatch = content.match(/<!(\d+)>/);
     if (rowspanMatch) {
-        rowspan = parseInt(rowspanMatch[1]) + 1; // n개 병합 = 자신 포함 n+1
-        content = content.replace(/<\|\d+>/, "").trim();
+        rowspan = parseInt(rowspanMatch[1]);
+        content = content.replace(/<!(\d+)>/g, "").trim();
     }
 
     return { content, colspan, rowspan };
@@ -318,7 +476,7 @@ export async function getPostBySlug(slug: string): Promise<PostData | null> {
 
         // 코드 블록 내 이스케이프된 백틱 처리
         preprocessedContent = preprocessedContent.replace(
-            /^( *)```(\w+)(?:\s+\{([^}]+)\})?\n([\s\S]*?)\n\1```/gm,
+            /^( *)```(\w+)(?:\s+\{([^}]+)\})?\n([\s\S]*?)\n?\1```/gm,
             (match, indent, lang, highlight, codeContent) => {
                 const markedCode = codeContent.replace(
                     /\\`/g,
@@ -335,9 +493,14 @@ export async function getPostBySlug(slug: string): Promise<PostData | null> {
 
         // 코드 블록 감지 및 백틱 보호
         const contentWithProtectedBackticks = preprocessedContent.replace(
-            /^( *)```(\w+)(?:\s+([^\n]+))?\n([\s\S]*?)\n\1```/gm,
+            /^( *)```(\w+)(?:\s+([^\n]+))?\n([\s\S]*?)\n?\1```/gm,
             (match, indent, lang, meta, codeContent) => {
                 const id = `cb${blockId++}`;
+
+                // Mermaid 블록은 백틱 처리하지 않음
+                if (lang === "mermaid" || lang === "mermaidc") {
+                    return match;
+                }
 
                 // 메타 정보 파싱 (title="..." 과 {1,3-5} 형태 모두 지원)
                 let title = "";
