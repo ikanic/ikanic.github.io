@@ -31,6 +31,23 @@ export const metadata: Metadata = {
     ],
     authors: [{ name: siteConfig.author, url: "https://taek0622.github.io" }],
     creator: siteConfig.author,
+
+    // 파비콘 설정
+    icons: {
+        icon: [
+            { url: "/favicon.ico", sizes: "any" },
+            { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+            { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+        ],
+        apple: [
+            {
+                url: "/apple-touch-icon.png",
+                sizes: "180x180",
+                type: "image/png",
+            },
+        ],
+    },
+
     openGraph: {
         type: "website",
         locale: "ko_KR",

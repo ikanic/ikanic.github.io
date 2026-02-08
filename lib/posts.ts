@@ -41,122 +41,253 @@ function getSortDate(post: PostData): string {
     return post.modifiedDate || post.createdDate;
 }
 
+// 옵션 파싱 헬퍼 함수
+function parseOptions(options: string): {
+    caption: string;
+    width: string;
+    height: string;
+} {
+    let caption = "";
+    let width = "";
+    let height = "";
+
+    let i = 0;
+    const optionPairs: string[] = [];
+    let currentPair = "";
+
+    while (i < options.length) {
+        const char = options[i];
+
+        // 백슬래시 처리
+        if (char === "\\" && i + 1 < options.length) {
+            const nextChar = options[i + 1];
+            if (nextChar === ",") {
+                currentPair += ",";
+                i += 2;
+                continue;
+            } else if (nextChar === "\\") {
+                currentPair += "\\";
+                i += 2;
+                continue;
+            }
+        }
+
+        // 일반 쉼표
+        if (char === ",") {
+            if (currentPair.trim()) {
+                optionPairs.push(currentPair.trim());
+            }
+            currentPair = "";
+            i++;
+            continue;
+        }
+
+        // 일반 문자
+        currentPair += char;
+        i++;
+    }
+
+    if (currentPair.trim()) {
+        optionPairs.push(currentPair.trim());
+    }
+
+    optionPairs.forEach((pair: string) => {
+        const eqIndex = pair.indexOf("=");
+        if (eqIndex > 0) {
+            const key = pair.substring(0, eqIndex).trim();
+            const value = pair.substring(eqIndex + 1).trim();
+            if (key === "caption") caption = value;
+            else if (key === "width") width = value;
+            else if (key === "height") height = value;
+        }
+    });
+
+    return { caption, width, height };
+}
+
+// Caption 내부의 마크다운 링크를 HTML로 변환
+function convertCaptionMarkdownToHtml(caption: string): string {
+    // [텍스트](url) 패턴을 <a href="url">텍스트</a>로 변환
+    return caption.replace(
+        /\[([^\]]+)\]\(([^)]+)\)/g,
+        '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>',
+    );
+}
+
+// `[` `]` 괄호 매칭으로 올바른 닫는 ] 찾기
+function findClosingBracket(str: string, startIdx: number): number {
+    let depth = 1; // ![ 또는 !![ 에서 [ 하나 시작
+
+    for (let i = startIdx; i < str.length; i++) {
+        if (str[i] === "\\" && i + 1 < str.length) {
+            i++; // 이스케이프 건너뛰기
+            continue;
+        }
+
+        if (str[i] === "[") {
+            depth++;
+        } else if (str[i] === "]") {
+            depth--;
+            if (depth === 0) {
+                return i;
+            }
+        }
+    }
+
+    return -1;
+}
+
+// 미디어 라인 파싱 (이미지/비디오)
+function parseMediaLine(
+    line: string,
+    isVideo: boolean,
+): { altAndOptions: string; url: string } | null {
+    const prefix = isVideo ? "!![" : "![";
+    if (!line.startsWith(prefix)) return null;
+
+    const startIdx = prefix.length;
+
+    // `![`와 매칭되는 `]` 찾기 (괄호 매칭)
+    const bracketEnd = findClosingBracket(line, startIdx);
+
+    if (
+        bracketEnd === -1 ||
+        bracketEnd + 1 >= line.length ||
+        line[bracketEnd + 1] !== "("
+    ) {
+        return null;
+    }
+
+    const altAndOptions = line.substring(startIdx, bracketEnd);
+    const afterBracket = line.substring(bracketEnd + 2); // ]( 다음부터
+
+    // afterBracket은 순수하게 이미지/비디오 URL
+    const lastParen = afterBracket.lastIndexOf(")");
+    if (lastParen === -1) return null;
+
+    const url = afterBracket.substring(0, lastParen);
+
+    return {
+        altAndOptions,
+        url,
+    };
+}
+
+// 비디오 처리 헬퍼 함수
+function processVideoSyntax(altAndOptions: string, url: string): string {
+    let alt = "";
+    let caption = "";
+    let width = "";
+    let height = "";
+
+    if (altAndOptions.includes("\\|")) {
+        alt = altAndOptions.replace(/\\\|/g, "|").replace(/\\\\/g, "\\");
+    } else if (altAndOptions.includes("|")) {
+        const pipeParts = altAndOptions.split("|");
+        alt = pipeParts[0].trim().replace(/\\\\/g, "\\");
+        const options = pipeParts[1] || "";
+        const parsed = parseOptions(options);
+        caption = parsed.caption;
+        width = parsed.width;
+        height = parsed.height;
+    } else {
+        alt = altAndOptions.replace(/\\\\/g, "\\");
+    }
+
+    const style = [];
+    if (width) style.push(`width: ${width}${width.match(/\d$/) ? "px" : ""}`);
+    if (height)
+        style.push(`height: ${height}${height.match(/\d$/) ? "px" : ""}`);
+
+    let html = '<figure class="markdown-media">\n';
+    html += `<video${style.length > 0 ? ` style="${style.join("; ")}"` : ""} controls>\n`;
+    html += `  <source src="${url}" />\n`;
+    html += `  ${alt}\n`;
+    html += "</video>\n";
+    if (caption) {
+        // Caption 내부의 마크다운 링크를 HTML로 변환
+        const captionHtml = convertCaptionMarkdownToHtml(caption);
+        html += `<figcaption class="markdown-caption">${captionHtml}</figcaption>\n`;
+    }
+    html += "</figure>";
+
+    return html;
+}
+
+// 이미지 처리 헬퍼 함수
+function processImageSyntax(altAndOptions: string, url: string): string {
+    let alt = "";
+    let caption = "";
+    let width = "";
+    let height = "";
+
+    if (altAndOptions.includes("\\|")) {
+        alt = altAndOptions.replace(/\\\|/g, "|").replace(/\\\\/g, "\\");
+    } else if (altAndOptions.includes("|")) {
+        const pipeParts = altAndOptions.split("|");
+        alt = pipeParts[0].trim().replace(/\\\\/g, "\\");
+        const options = pipeParts[1] || "";
+        const parsed = parseOptions(options);
+        caption = parsed.caption;
+        width = parsed.width;
+        height = parsed.height;
+    } else {
+        alt = altAndOptions.replace(/\\\\/g, "\\");
+    }
+
+    const style = [];
+    if (width) style.push(`width: ${width}${width.match(/\d$/) ? "px" : ""}`);
+    if (height)
+        style.push(`height: ${height}${height.match(/\d$/) ? "px" : ""}`);
+
+    let html = '<figure class="markdown-media">\n';
+    html += `<img src="${url}" alt="${alt}"${style.length > 0 ? ` style="${style.join("; ")}"` : ""} />\n`;
+    if (caption) {
+        // Caption 내부의 마크다운 링크를 HTML로 변환
+        const captionHtml = convertCaptionMarkdownToHtml(caption);
+        html += `<figcaption class="markdown-caption">${captionHtml}</figcaption>\n`;
+    }
+    html += "</figure>";
+
+    return html;
+}
+
 // 커스텀 마크다운 문법 처리
 function processCustomSyntax(content: string): string {
     let processed = content;
 
     // 0. 비디오 삽입: !![alt|options](url)
-    // 예: !![설명|caption=제목,width=30,height=20](url)
-    processed = processed.replace(
-        /!!\[([^\]]*)\]\(([^)]+)\)/g,
-        (match, altAndOptions, url) => {
-            let alt = "";
-            let caption = "";
-            let width = "";
-            let height = "";
+    // 한 줄씩 처리
+    const lines = processed.split("\n");
+    const processedLines: string[] = [];
 
-            // 이스케이프된 파이프(\|)가 있는지 확인
-            if (altAndOptions.includes("\\|")) {
-                // 이스케이프된 경우: alt에 전체 포함
-                alt = altAndOptions.replace(/\\\|/g, "|");
-            } else if (altAndOptions.includes("|")) {
-                // 파이프로 분리
-                const pipeParts = altAndOptions.split("|");
-                alt = pipeParts[0].trim();
-                const options = pipeParts[1] || "";
-
-                // 옵션 파싱
-                const optionPairs = options.split(",");
-                optionPairs.forEach((pair: string) => {
-                    const eqParts = pair.split("=");
-                    if (eqParts.length === 2) {
-                        const key = eqParts[0].trim();
-                        const value = eqParts[1].trim();
-                        if (key === "caption") caption = value;
-                        else if (key === "width") width = value;
-                        else if (key === "height") height = value;
-                    }
-                });
-            } else {
-                alt = altAndOptions;
-            }
-
-            const style = [];
-            if (width)
-                style.push(`width: ${width}${width.match(/\d$/) ? "px" : ""}`);
-            if (height)
-                style.push(
-                    `height: ${height}${height.match(/\d$/) ? "px" : ""}`,
+    for (const line of lines) {
+        // 비디오 패턴 확인
+        if (line.trim().startsWith("!![")) {
+            const parsed = parseMediaLine(line.trim(), true);
+            if (parsed) {
+                processedLines.push(
+                    processVideoSyntax(parsed.altAndOptions, parsed.url),
                 );
-
-            let html = '<figure class="markdown-media">\n';
-            html += `<video${style.length > 0 ? ` style="${style.join("; ")}"` : ""} controls>\n`;
-            html += `  <source src="${url}" />\n`;
-            html += `  ${alt}\n`;
-            html += "</video>\n";
-            if (caption) {
-                html += `<figcaption class="markdown-caption">${caption}</figcaption>\n`;
+                continue;
             }
-            html += "</figure>";
+        }
 
-            return html;
-        },
-    );
-
-    // 1. 이미지 삽입 개선: ![alt|options](url)
-    // 예: ![설명|caption=제목,width=30,height=20](url)
-    processed = processed.replace(
-        /!\[([^\]]*)\]\(([^)]+)\)/g,
-        (match, altAndOptions, url) => {
-            let alt = "";
-            let caption = "";
-            let width = "";
-            let height = "";
-
-            // 이스케이프된 파이프(\|)가 있는지 확인
-            if (altAndOptions.includes("\\|")) {
-                // 이스케이프된 경우: alt에 전체 포함
-                alt = altAndOptions.replace(/\\\|/g, "|");
-            } else if (altAndOptions.includes("|")) {
-                // 파이프로 분리
-                const pipeParts = altAndOptions.split("|");
-                alt = pipeParts[0].trim();
-                const options = pipeParts[1] || "";
-
-                // 옵션 파싱
-                const optionPairs = options.split(",");
-                optionPairs.forEach((pair: string) => {
-                    const eqParts = pair.split("=");
-                    if (eqParts.length === 2) {
-                        const key = eqParts[0].trim();
-                        const value = eqParts[1].trim();
-                        if (key === "caption") caption = value;
-                        else if (key === "width") width = value;
-                        else if (key === "height") height = value;
-                    }
-                });
-            } else {
-                alt = altAndOptions;
-            }
-
-            const style = [];
-            if (width)
-                style.push(`width: ${width}${width.match(/\d$/) ? "px" : ""}`);
-            if (height)
-                style.push(
-                    `height: ${height}${height.match(/\d$/) ? "px" : ""}`,
+        // 이미지 패턴 확인
+        if (line.trim().startsWith("![") && !line.trim().startsWith("!![")) {
+            const parsed = parseMediaLine(line.trim(), false);
+            if (parsed) {
+                processedLines.push(
+                    processImageSyntax(parsed.altAndOptions, parsed.url),
                 );
-
-            let html = '<figure class="markdown-media">\n';
-            html += `<img src="${url}" alt="${alt}"${style.length > 0 ? ` style="${style.join("; ")}"` : ""} />\n`;
-            if (caption) {
-                html += `<figcaption class="markdown-caption">${caption}</figcaption>\n`;
+                continue;
             }
-            html += "</figure>";
+        }
 
-            return html;
-        },
-    );
+        processedLines.push(line);
+    }
+
+    processed = processedLines.join("\n");
 
     // 2. 윗첨자: ^^내용^^ -> <sup>내용</sup>
     processed = processed.replace(/(?<!\\)\^\^([^\^]+)\^\^/g, "<sup>$1</sup>");
