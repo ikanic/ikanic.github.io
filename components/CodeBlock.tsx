@@ -260,7 +260,7 @@ export default function CodeBlockEnhancer() {
                         });
                     });
 
-                    // 줄 하이라이트 처리 (빈 줄 포함)
+                    // 줄 하이라이트 처리 (빈 줄 개선)
                     highlightGroups.forEach((group) => {
                         const linesToHighlight: HTMLElement[] = [];
                         let currentLineNum = 1;
@@ -303,7 +303,7 @@ export default function CodeBlockEnhancer() {
                                 },
                             );
 
-                            // 빈 줄 처리 - 콘텐츠가 없거나 공백만 있으면
+                            // 빈 줄 처리
                             const isEmpty =
                                 contentNodes.length === 0 ||
                                 contentNodes.every((node) => {
@@ -315,12 +315,10 @@ export default function CodeBlockEnhancer() {
                             const realContentNodes: ChildNode[] = [];
 
                             if (isEmpty) {
-                                // 빈 줄: non-breaking space 추가
                                 realContentNodes.push(
                                     document.createTextNode("\u00A0"),
                                 );
                             } else {
-                                // 일반 줄: 공백과 콘텐츠 분리
                                 let foundNonWhitespace = false;
 
                                 contentNodes.forEach((node) => {
@@ -439,8 +437,16 @@ export default function CodeBlockEnhancer() {
 
                             lineElement.appendChild(highlightBlock);
                         } else {
-                            // 여러 줄 하이라이트 (기존 로직 유지)
-                            let minIndent = Infinity;
+                            // 여러 줄 하이라이트 - 빈 줄 처리 개선
+
+                            // 1단계: 모든 줄의 실제 내용 시작/끝 위치 파악
+                            const lineContentInfo: Array<{
+                                element: HTMLElement;
+                                isEmpty: boolean;
+                                leadingSpaces: number;
+                                contentLength: number;
+                                contentText: string;
+                            }> = [];
 
                             linesToHighlight.forEach((lineElement) => {
                                 const lineNumber =
@@ -463,59 +469,51 @@ export default function CodeBlockEnhancer() {
                                 const fullText = contentNodes
                                     .map((n) => n.textContent || "")
                                     .join("");
-                                const match = fullText.match(/^(\s*)/);
-                                const indent = match ? match[1].length : 0;
 
-                                if (fullText.trim() && indent < minIndent) {
-                                    minIndent = indent;
-                                }
+                                const isEmpty = fullText.trim() === "";
+                                const leadingMatch = fullText.match(/^(\s*)/);
+                                const leadingSpaces = leadingMatch
+                                    ? leadingMatch[1].length
+                                    : 0;
+                                const contentText =
+                                    fullText.substring(leadingSpaces);
+                                const contentLength = contentText.length;
+
+                                lineContentInfo.push({
+                                    element: lineElement,
+                                    isEmpty,
+                                    leadingSpaces,
+                                    contentLength,
+                                    contentText,
+                                });
                             });
 
-                            // minIndent가 Infinity이면 (모든 줄이 빈 줄) 0으로 설정
-                            if (minIndent === Infinity) {
-                                minIndent = 0;
-                            }
+                            // 2단계: 빈 줄이 아닌 줄들 중에서 최소 인덴트와 최대 길이 찾기
+                            const nonEmptyLines = lineContentInfo.filter(
+                                (info) => !info.isEmpty,
+                            );
 
+                            let minIndent = Infinity;
                             let maxContentLength = 0;
 
-                            linesToHighlight.forEach((lineElement) => {
-                                const lineNumber =
-                                    lineElement.querySelector(".line-number");
-                                const diffSymbol =
-                                    lineElement.querySelector(".diff-symbol");
-
-                                const contentNodes: ChildNode[] = [];
-                                Array.from(lineElement.childNodes).forEach(
-                                    (node) => {
-                                        if (
-                                            node === lineNumber ||
-                                            node === diffSymbol
-                                        )
-                                            return;
-                                        contentNodes.push(node);
-                                    },
-                                );
-
-                                const fullText = contentNodes
-                                    .map((n) => n.textContent || "")
-                                    .join("");
-                                const contentAfterIndent =
-                                    fullText.substring(minIndent);
-
-                                if (
-                                    contentAfterIndent.length > maxContentLength
-                                ) {
-                                    maxContentLength =
-                                        contentAfterIndent.length;
+                            nonEmptyLines.forEach((info) => {
+                                if (info.leadingSpaces < minIndent) {
+                                    minIndent = info.leadingSpaces;
+                                }
+                                const adjustedLength = info.contentLength;
+                                if (adjustedLength > maxContentLength) {
+                                    maxContentLength = adjustedLength;
                                 }
                             });
 
-                            // 빈 줄만 있는 경우 최소 너비 설정
-                            if (maxContentLength === 0) {
-                                maxContentLength = 1;
-                            }
+                            // 빈 줄만 있는 경우 기본값 설정
+                            if (minIndent === Infinity) minIndent = 0;
+                            if (maxContentLength === 0) maxContentLength = 1;
 
-                            linesToHighlight.forEach((lineElement, idx) => {
+                            // 3단계: 각 줄에 하이라이트 블록 적용
+                            lineContentInfo.forEach((info, idx) => {
+                                const lineElement = info.element;
+
                                 if (
                                     lineElement.querySelector(
                                         ".highlight-block",
@@ -540,22 +538,55 @@ export default function CodeBlockEnhancer() {
                                     },
                                 );
 
-                                // 빈 줄 여부 확인
-                                const isEmpty =
-                                    contentNodes.length === 0 ||
-                                    contentNodes.every((node) => {
-                                        const text = node.textContent || "";
-                                        return text.trim() === "";
+                                // 빈 줄 처리
+                                if (info.isEmpty) {
+                                    const highlightBlock =
+                                        document.createElement("span");
+                                    highlightBlock.className =
+                                        "highlight-block highlight-block-group";
+
+                                    (
+                                        highlightBlock as HTMLElement
+                                    ).style.setProperty(
+                                        "--box-width",
+                                        `${maxContentLength}ch`,
+                                    );
+
+                                    if (idx === 0)
+                                        highlightBlock.classList.add(
+                                            "highlight-block-first",
+                                        );
+                                    if (idx === lineContentInfo.length - 1)
+                                        highlightBlock.classList.add(
+                                            "highlight-block-last",
+                                        );
+
+                                    // 빈 줄: 앞쪽 공백 + nbsp
+                                    const leadingSpace = " ".repeat(minIndent);
+
+                                    contentNodes.forEach((node) => {
+                                        if (node.parentNode === lineElement) {
+                                            lineElement.removeChild(node);
+                                        }
                                     });
 
-                                if (isEmpty) {
-                                    // 빈 줄: non-breaking space로 교체
-                                    contentNodes.length = 0;
-                                    contentNodes.push(
+                                    if (minIndent > 0) {
+                                        lineElement.appendChild(
+                                            document.createTextNode(
+                                                leadingSpace,
+                                            ),
+                                        );
+                                    }
+
+                                    highlightBlock.appendChild(
                                         document.createTextNode("\u00A0"),
                                     );
+
+                                    lineElement.appendChild(highlightBlock);
+                                    return;
                                 }
 
+                                // 일반 줄 처리
                                 const whitespaceNodes: ChildNode[] = [];
                                 const boxContentNodes: ChildNode[] = [];
                                 let removedCount = 0;
@@ -745,7 +776,7 @@ export default function CodeBlockEnhancer() {
                                     highlightBlock.classList.add(
                                         "highlight-block-first",
                                     );
-                                if (idx === linesToHighlight.length - 1)
+                                if (idx === lineContentInfo.length - 1)
                                     highlightBlock.classList.add(
                                         "highlight-block-last",
                                     );

@@ -603,18 +603,12 @@ export async function getPostBySlug(slug: string): Promise<PostData | null> {
 
         // 이스케이프된 백틱 마커
         const ESCAPED_BACKTICK_MARKER = "___ESC_BT___";
-        let preprocessedContent = processedContent;
 
-        // 코드 블록 내 이스케이프된 백틱 처리
-        preprocessedContent = preprocessedContent.replace(
-            /^( *)```(\w+)(?:\s+\{([^}]+)\})?\n([\s\S]*?)\n?\1```/gm,
-            (match, indent, lang, highlight, codeContent) => {
-                const markedCode = codeContent.replace(
-                    /\\`/g,
-                    ESCAPED_BACKTICK_MARKER,
-                );
-                const highlightPart = highlight ? ` {${highlight}}` : "";
-                return `${indent}\`\`\`${lang}${highlightPart}\n${markedCode}\n${indent}\`\`\``;
+        // 코드 블록 내 이스케이프된 백틱을 마커로 변환
+        let preprocessedContent = processedContent.replace(
+            /```[\s\S]*?```/g,
+            (match) => {
+                return match.replace(/\\`/g, ESCAPED_BACKTICK_MARKER);
             },
         );
 
@@ -622,11 +616,11 @@ export async function getPostBySlug(slug: string): Promise<PostData | null> {
         const blockMeta = new Map<string, string>();
         const backtickMap = new Map<string, string>();
 
-        // 코드 블록 감지 및 백틱 보호
+        // 코드 블록 감지 및 백틱 보호 (개선된 정규식 - 더 정확한 매칭)
         const contentWithProtectedBackticks = preprocessedContent.replace(
-            /^( *)```(\w+)(?:\s+([^\n]+))?\n([\s\S]*?)\n?\1```/gm,
+            /( *)```(\w+)(?: ([^\n]+))?\n([\s\S]*?)\n\1```/g,
             (match, indent, lang, meta, codeContent) => {
-                const id = `cb${blockId++}`;
+                const blockIdentifier = `cb${blockId++}`;
 
                 // Mermaid 블록은 백틱 처리하지 않음
                 if (lang === "mermaid" || lang === "mermaidc") {
@@ -634,21 +628,21 @@ export async function getPostBySlug(slug: string): Promise<PostData | null> {
                 }
 
                 // 메타 정보 파싱 (title="..." 과 {1,3-5} 형태 모두 지원)
-                let title = "";
-                let highlight = "";
+                let blockTitle = "";
+                let blockHighlight = "";
 
                 if (meta) {
                     // title 추출
                     const titleMatch = meta.match(/title="([^"]+)"/);
                     if (titleMatch) {
-                        title = titleMatch[1];
+                        blockTitle = titleMatch[1];
                     }
 
                     // 하이라이트 추출 {1,3-5} 형태
                     const highlightMatch = meta.match(/\{([^}]+)\}/);
                     if (highlightMatch) {
-                        highlight = highlightMatch[1];
-                        blockMeta.set(id, highlight);
+                        blockHighlight = highlightMatch[1];
+                        blockMeta.set(blockIdentifier, blockHighlight);
                     }
                 }
 
@@ -656,15 +650,17 @@ export async function getPostBySlug(slug: string): Promise<PostData | null> {
                 const protectedCode = codeContent.replace(
                     /`([^`]+)`/g,
                     (backtickMatch: string, backtickContent: string) => {
-                        const marker = `__BACKTICK_${id}_${markerIndex++}__`;
+                        const marker = `__BACKTICK_${blockIdentifier}_${markerIndex++}__`;
                         backtickMap.set(marker, backtickContent);
                         return marker;
                     },
                 );
 
                 // title이 있으면 주석으로 추가
-                const titleComment = title ? `<!-- title:${title} -->` : "";
-                return `${indent}${titleComment}<!-- ${id} -->\n${indent}\`\`\`${lang}\n${protectedCode}\n${indent}\`\`\``;
+                const titleComment = blockTitle
+                    ? `<!-- title:${blockTitle} -->`
+                    : "";
+                return `${indent}${titleComment}<!-- ${blockIdentifier} -->\n${indent}\`\`\`${lang}\n${protectedCode}\n${indent}\`\`\``;
             },
         );
 
@@ -705,8 +701,8 @@ export async function getPostBySlug(slug: string): Promise<PostData | null> {
         // 메타 정보 추가
         contentHtml = contentHtml.replace(
             /(?:<!--\s*title:([^>]+)\s*-->)?<!--\s*(cb\d+)\s*-->\s*<figure[^>]*>[\s\S]*?<pre/g,
-            (match, title, id) => {
-                const meta = blockMeta.get(id);
+            (match, titleFromComment, blockIdentifier) => {
+                const meta = blockMeta.get(blockIdentifier);
                 let result = match;
 
                 // 하이라이트 메타 추가
@@ -718,10 +714,10 @@ export async function getPostBySlug(slug: string): Promise<PostData | null> {
                 }
 
                 // 타이틀 추가
-                if (title) {
+                if (titleFromComment) {
                     result = result.replace(
                         /<pre/,
-                        `<pre data-title="${title}"`,
+                        `<pre data-title="${titleFromComment}"`,
                     );
                 }
 
