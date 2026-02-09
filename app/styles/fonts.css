@@ -1,0 +1,51 @@
+/* ============================================
+   폰트 설정 - iOS Safari 최적화
+   ============================================ */
+
+/* Pretendard 폰트 - subset으로 최적화 */
+@font-face {
+    font-family: "Pretendard";
+    src: url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/woff2-subset/Pretendard-Regular.subset.woff2")
+        format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+AC00-D7A3, U+0020-007E; /* 한글 + 기본 영문 */
+}
+
+@font-face {
+    font-family: "Pretendard";
+    src: url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/woff2-subset/Pretendard-Bold.subset.woff2")
+        format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+AC00-D7A3, U+0020-007E;
+}
+
+/* D2Coding 폰트 - 코드용 */
+@font-face {
+    font-family: "D2Coding";
+    src: url("https://cdn.jsdelivr.net/gh/wan2land/d2coding/d2coding-subset.woff2")
+        format("woff2");
+    font-display: swap;
+    font-weight: normal;
+}
+
+/* 기본 폰트 설정 */
+* {
+    font-family:
+        "Pretendard",
+        -apple-system,
+        BlinkMacSystemFont,
+        system-ui,
+        sans-serif;
+}
+
+code,
+pre,
+kbd,
+samp,
+.code-font {
+    font-family: "D2Coding", "Courier New", monospace !important;
+}

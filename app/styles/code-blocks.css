@@ -1,0 +1,323 @@
+/* ============================================
+   코드 블록 스타일
+   ============================================ */
+
+/* 인라인 코드 */
+.prose code {
+    background-color: rgba(59, 130, 246, 0.15);
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    color: rgb(190, 24, 93);
+    font-size: 0.875rem;
+    font-family: "D2Coding", monospace;
+    font-weight: 600;
+}
+
+/* 코드 블록 래퍼 */
+.code-block-wrapper {
+    margin: 1.5rem 0;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: linear-gradient(to bottom, rgb(31, 41, 55), rgb(17, 24, 39));
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.code-block-wrapper figure {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+}
+
+/* 코드 블록 헤더 */
+.code-block-header {
+    background: rgba(17, 24, 39, 0.8);
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+    min-height: 2.5rem;
+}
+
+.code-block-header:empty {
+    padding: 0.5rem 1rem;
+}
+
+/* 맥북 버튼들 */
+.mac-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.mac-button {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.mac-close {
+    background-color: #ff5f56;
+}
+
+.mac-minimize {
+    background-color: #ffbd2e;
+}
+
+.mac-maximize {
+    background-color: #27c93f;
+}
+
+/* 코드 타이틀 */
+.code-title {
+    color: rgb(156, 163, 175);
+    font-size: 0.875rem;
+    font-family: "D2Coding", monospace;
+    font-weight: 500;
+    flex: 1;
+}
+
+/* 코드 블록 자체 */
+.code-block-wrapper pre {
+    margin: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    padding: 1.25rem 0 !important;
+    overflow-x: auto;
+    counter-reset: line;
+}
+
+/* 모든 줄에 기본 패딩 */
+.code-block-wrapper [data-line] {
+    display: block !important;
+    padding-left: 4.5rem !important;
+    padding-right: 1rem !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    position: relative !important;
+    line-height: 1.7 !important;
+}
+
+/* 하이라이트 블록이 있는 줄은 패딩 조정 */
+.code-block-wrapper [data-line]:has(.highlight-block),
+.code-block-wrapper [data-line]:has(.highlight-block-group) {
+    padding-left: calc(4.5rem - 4px) !important;
+}
+
+/* 줄 번호 */
+.code-block-wrapper [data-line] > .line-number {
+    display: inline-block !important;
+    position: absolute !important;
+    left: 0.5rem !important;
+    top: 0 !important;
+    width: 2rem !important;
+    text-align: right !important;
+    color: rgb(75, 85, 99) !important;
+    user-select: none !important;
+    font-size: 0.875rem !important;
+    line-height: 1.7 !important;
+    vertical-align: top !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* diff 기호 위치 */
+.code-block-wrapper [data-line] > .diff-symbol {
+    display: inline-block !important;
+    position: absolute !important;
+    left: 3rem !important;
+    top: 0 !important;
+    width: 1rem !important;
+    text-align: left !important;
+    font-weight: bold !important;
+    user-select: none !important;
+    line-height: 1.7 !important;
+    vertical-align: top !important;
+}
+
+/* 추가된 줄 스타일 */
+.code-block-wrapper [data-line].line-added {
+    background-color: rgba(34, 197, 94, 0.15) !important;
+}
+
+.code-block-wrapper [data-line].line-added::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background-color: rgb(34, 197, 94);
+}
+
+.code-block-wrapper [data-line].line-added > .diff-symbol {
+    color: rgb(34, 197, 94) !important;
+}
+
+/* 삭제된 줄 스타일 */
+.code-block-wrapper [data-line].line-removed {
+    background-color: rgba(239, 68, 68, 0.15) !important;
+}
+
+.code-block-wrapper [data-line].line-removed::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background-color: rgb(239, 68, 68);
+}
+
+.code-block-wrapper [data-line].line-removed > .diff-symbol {
+    color: rgb(239, 68, 68) !important;
+}
+
+/* 하이라이트된 줄 스타일 */
+.code-block-wrapper [data-line].line-highlight {
+    background-color: transparent !important;
+    border-left: none !important;
+    position: relative;
+}
+
+.code-block-wrapper [data-line].line-highlight::before {
+    display: none;
+}
+
+.code-block-wrapper [data-line].line-highlight::after {
+    display: none;
+}
+
+/* 하이라이트 블록 */
+.code-block-wrapper .highlight-block {
+    display: inline-block;
+    border: 2px solid rgb(236, 72, 153);
+    border-radius: 4px;
+    padding: 0 4px;
+    margin: -2px 0;
+    background-color: transparent;
+    min-height: 1.7em;
+    min-width: 1ch;
+}
+
+/* 그룹의 일부인 하이라이트 블록 */
+.code-block-wrapper .highlight-block-group {
+    display: inline-block;
+    width: var(--box-width, auto);
+    padding-left: 4px;
+    box-sizing: content-box;
+    border-radius: 0;
+    border-left: 2px solid rgb(236, 72, 153);
+    border-right: 2px solid rgb(236, 72, 153);
+    border-top: none;
+    border-bottom: none;
+    min-height: 1.7em;
+}
+
+/* 그룹의 첫 번째 블록 */
+.code-block-wrapper .highlight-block-first {
+    border-top: 2px solid rgb(236, 72, 153);
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+
+/* 그룹의 마지막 블록 */
+.code-block-wrapper .highlight-block-last {
+    border-bottom: 2px solid rgb(236, 72, 153);
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+/* 단어 하이라이트 스타일 */
+.code-block-wrapper mark.code-word-highlight {
+    background-color: transparent;
+    border: 2px solid rgb(236, 72, 153);
+    border-radius: 4px;
+    padding: 1px 4px;
+    font-weight: 400;
+    font-family: "D2Coding", "Courier New", monospace !important;
+}
+
+/* 코드 블록 푸터 */
+.code-block-footer {
+    background: rgba(17, 24, 39, 0.8);
+    padding: 0.5rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+.code-language {
+    font-size: 0.75rem;
+    color: rgb(156, 163, 175);
+    font-weight: 600;
+    font-family: "D2Coding", monospace;
+}
+
+.code-copy-button {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.75rem;
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 0.375rem;
+    color: rgb(147, 197, 253);
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.code-copy-button:hover {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: rgba(59, 130, 246, 0.5);
+}
+
+.code-copy-button svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* 코드 블록 */
+.prose pre {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 1.25rem 0;
+    overflow-x: auto;
+    margin: 0;
+    box-shadow: none;
+}
+
+.prose pre code {
+    background-color: transparent;
+    padding: 0;
+    color: rgb(229, 231, 235);
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.7;
+    font-family: "D2Coding", monospace;
+    display: block;
+}
+
+/* Syntax highlighting */
+.prose pre code span {
+    font-family: "D2Coding", monospace;
+}
+
+/* rehype-pretty-code 스타일 */
+.prose figure[data-rehype-pretty-code-figure] {
+    margin: 0;
+    background: transparent;
+}
+
+.prose figure[data-rehype-pretty-code-figure] pre {
+    margin: 0;
+    background: transparent;
+}

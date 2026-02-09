@@ -1,0 +1,55 @@
+/* ===========================
+   Giscus 스타일 커스터마이징
+   =========================== */
+
+/* Giscus 컨테이너 기본 정리 */
+.giscus-container {
+    width: 100%;
+    padding: 1.5rem;
+}
+
+/* Giscus iframe */
+iframe.giscus-frame {
+    width: 100% !important;
+    border: none !important;
+    color-scheme: light;
+}
+
+/* Giscus 내부 요소들 */
+.giscus-container :is(.gsc-reactions, .gsc-comment-box, .gsc-comment) {
+    background: rgba(255, 255, 255, 0.5) !important;
+    backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.6) !important;
+    border-radius: 0.75rem !important;
+}
+
+/* iframe 내부 스타일 커스터마이징을 위한 CSS 변수 오버라이드 */
+.giscus-frame {
+    --color-text-primary: rgb(17, 24, 39) !important;
+    --color-text-secondary: rgb(55, 65, 81) !important;
+    --color-text-tertiary: rgb(75, 85, 99) !important;
+
+    /* 버튼 배경 - 분홍 계열 */
+    --color-btn-bg: rgba(236, 72, 153, 0.15) !important;
+    --color-btn-border: rgba(236, 72, 153, 0.3) !important;
+    --color-btn-text: rgb(190, 24, 93) !important;
+    --color-btn-hover-bg: rgba(236, 72, 153, 0.25) !important;
+    --color-btn-hover-border: rgba(236, 72, 153, 0.4) !important;
+    --color-btn-selected-bg: rgba(236, 72, 153, 0.3) !important;
+    --color-btn-selected-border: rgba(236, 72, 153, 0.5) !important;
+
+    /* 링크 색상 */
+    --color-accent-fg: rgb(219, 39, 119) !important;
+    --color-accent-emphasis: rgb(190, 24, 93) !important;
+
+    /* 테두리 색상 - 분홍색으로 통일 */
+    --color-border-default: rgba(236, 72, 153, 0.3) !important;
+    --color-border-muted: rgba(236, 72, 153, 0.2) !important;
+    --color-border-subtle: rgba(236, 72, 153, 0.15) !important;
+
+    /* 배경 투명 */
+    --color-canvas-default: transparent !important;
+    --color-canvas-overlay: rgba(255, 255, 255, 0.5) !important;
+    --color-canvas-inset: rgba(255, 255, 255, 0.3) !important;
+    --color-canvas-subtle: rgba(255, 255, 255, 0.2) !important;
+}
