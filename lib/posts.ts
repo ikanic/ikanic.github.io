@@ -289,11 +289,28 @@ function processCustomSyntax(content: string): string {
 
     processed = processedLines.join("\n");
 
-    // 2. 윗첨자: ^^내용^^ -> <sup>내용</sup>
-    processed = processed.replace(/(?<!\\)\^\^([^\^]+)\^\^/g, "<sup>$1</sup>");
+    // 2. 윗첨자: ^^내용^^ -> <sup>내용</sup> (링크 지원)
+    processed = processed.replace(
+        /(?<!\\)\^\^([^\^]+)\^\^/g,
+        (match, content) => {
+            // 내부의 마크다운 링크를 HTML로 변환
+            const htmlContent = content.replace(
+                /\[([^\]]+)\]\(([^)]+)\)/g,
+                '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>',
+            );
+            return `<sup>${htmlContent}</sup>`;
+        },
+    );
 
-    // 3. 아랫첨자: ,,내용,, -> <sub>내용</sub>
-    processed = processed.replace(/(?<!\\),,([^,]+),,/g, "<sub>$1</sub>");
+    // 3. 아랫첨자: ,,내용,, -> <sub>내용</sub> (링크 지원)
+    processed = processed.replace(/(?<!\\),,([^,]+),,/g, (match, content) => {
+        // 내부의 마크다운 링크를 HTML로 변환
+        const htmlContent = content.replace(
+            /\[([^\]]+)\]\(([^)]+)\)/g,
+            '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>',
+        );
+        return `<sub>${htmlContent}</sub>`;
+    });
 
     // 4. 이스케이프 처리 제거
     processed = processed.replace(/\\\^\^/g, "^^");
