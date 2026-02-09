@@ -1,5 +1,22 @@
 @import "tailwindcss";
 
+/* iOS safe area를 고려한 배경 확장 */
+.ios-safe-bg {
+    top: calc(env(safe-area-inset-top) * -1);
+    bottom: calc(env(safe-area-inset-bottom) * -1);
+    left: calc(env(safe-area-inset-left) * -1);
+    right: calc(env(safe-area-inset-right) * -1);
+}
+
+/* iOS에서 overscroll 시 배경색 처리 */
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+    height: 100vh;
+    background: #fef2f2;
+}
+
 /* 모듈화된 CSS 파일들 import */
 @import "./styles/fonts.css";
 @import "./styles/animations.css";

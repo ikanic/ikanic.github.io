@@ -88,6 +88,19 @@ export default function RootLayout({
     return (
         <html lang="ko">
             <head>
+                {/* iOS Safari viewport 설정 - safe area까지 확장 */}
+                <meta
+                    name="viewport"
+                    content="width=device-width, initial-scale=1, viewport-fit=cover"
+                />
+
+                {/* iOS Safari 상단바 색상 */}
+                <meta name="theme-color" content="#fef2f2" />
+                <meta
+                    name="apple-mobile-web-app-status-bar-style"
+                    content="black-translucent"
+                />
+
                 <link rel="preconnect" href="https://cdn.jsdelivr.net" />
                 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
                 <link
