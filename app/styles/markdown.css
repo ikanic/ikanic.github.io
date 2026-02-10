@@ -49,6 +49,8 @@
     text-decoration: none;
     font-weight: 500;
     transition: all 0.2s ease;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .prose a:hover {
