@@ -88,18 +88,42 @@ export default function RootLayout({
     return (
         <html lang="ko">
             <head>
-                {/* iOS Safari viewport 설정 - safe area까지 확장 */}
+                {/* iOS Safari viewport 설정 */}
                 <meta
                     name="viewport"
                     content="width=device-width, initial-scale=1, viewport-fit=cover"
                 />
 
-                {/* iOS Safari 상단바 색상 */}
-                <meta name="theme-color" content="#fef2f2" />
+                {/* PWA Manifest */}
+                <link rel="manifest" href="/manifest.json" />
+
+                {/* 모든 방법으로 theme-color 강제 설정 */}
+                <meta name="theme-color" content="#eedcf8" />
+                <meta
+                    name="theme-color"
+                    content="#eedcf8"
+                    media="(prefers-color-scheme: light)"
+                />
+                <meta
+                    name="theme-color"
+                    content="#eedcf8"
+                    media="(prefers-color-scheme: dark)"
+                />
+
+                {/* iOS Safari 전용 설정 */}
+                <meta name="apple-mobile-web-app-capable" content="yes" />
                 <meta
                     name="apple-mobile-web-app-status-bar-style"
-                    content="black-translucent"
+                    content="default"
                 />
+                <meta
+                    name="apple-mobile-web-app-title"
+                    content={siteConfig.title}
+                />
+
+                {/* Microsoft 전용 */}
+                <meta name="msapplication-navbutton-color" content="#eedcf8" />
+                <meta name="msapplication-TileColor" content="#eedcf8" />
 
                 <link rel="preconnect" href="https://cdn.jsdelivr.net" />
                 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
@@ -135,7 +159,7 @@ export default function RootLayout({
                 />
             </head>
             <body className={inter.className}>
-                {/* 그라데이션 메쉬 배경 */}
+                {/* 그라데이션 메쉬 배경 - 원래대로 유지 */}
                 <div className="fixed inset-0 -z-10">
                     <div
                         className="absolute inset-0"
