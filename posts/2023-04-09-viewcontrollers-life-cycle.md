@@ -5,14 +5,14 @@ modified-date: "2023-04-09 19:33"
 category: "Swift"
 tags:
     [
-        "iOS",
-        "Swift",
-        "UIKit",
-        "글또 8기",
         "Life Cycle",
         "ViewController",
         "라이프 사이클",
         "생명주기",
+        "UIKit",
+        "iOS",
+        "Swift",
+        "글또 8기",
     ]
 description: "ViewController의 Life Cycle에 대해 알아보자"
 ---

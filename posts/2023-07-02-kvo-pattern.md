@@ -3,7 +3,7 @@ title: "[Cocoa Design Patterns] KVO 패턴"
 created-date: "2023-07-02 22:58"
 modified-date: "2023-07-02 22:58"
 category: "Swift"
-tags: ["iOS", "글또 8기", "Swift", "Cocoa Framework", "Design Patterns", "KVO"]
+tags: ["KVO", "Design Patterns", "Cocoa Framework", "iOS", "Swift", "글또 8기"]
 description: "Cocoa Design Patterns의 KVO 패턴을 알아보자"
 ---
 

@@ -5,11 +5,11 @@ modified-date: "2023-02-25 21:10"
 category: "Swift"
 tags:
     [
+        "Swift Charts",
         "Framework",
+        "SwiftUI",
         "iOS",
         "Swift",
-        "Swift Charts",
-        "SwiftUI",
         "글또 8기",
         "훑어보기",
     ]

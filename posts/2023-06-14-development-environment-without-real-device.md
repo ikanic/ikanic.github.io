@@ -3,7 +3,7 @@ title: "[iOS] 실제 디바이스가 없는 경우의 개발 환경"
 created-date: "2023-06-14 17:39"
 modified-date: "2023-06-14 17:39"
 category: "Swift"
-tags: ["iOS", "글또 8기", "Simulator", "Xcode", "면접질문", "시뮬레이터"]
+tags: ["Simulator", "시뮬레이터", "면접질문", "Xcode", "iOS", "글또 8기"]
 description: "실제 디바이스가 없을 때 iOS 시뮬레이터를 이용한 개발에서 사용할 수 있는 것은 무엇일까?"
 ---
 

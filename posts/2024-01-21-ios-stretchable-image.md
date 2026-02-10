@@ -6,14 +6,14 @@ modified-date: "2024-01-21 06:51"
 category: "Swift"
 tags:
     [
+        "StretchableImage",
+        "9-Patch",
+        "나인패치",
         "iOS",
         "글또 9기",
         "Swift",
         "UIKit",
         "SwiftUI",
-        "StretchableImage",
-        "9-Patch",
-        "나인패치",
     ]
 description: "iOS에서 자연스럽게 늘어나는 이미지를 사용해보자"
 ---

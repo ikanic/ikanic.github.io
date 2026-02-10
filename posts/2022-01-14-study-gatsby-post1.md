@@ -3,8 +3,8 @@ title: "Gatsby 개발 환경 설정"
 thumbnail: "https://github.com/user-attachments/assets/d9c49910-b2fd-4f9d-bfb8-830babb485c9"
 created-date: "2022-01-14"
 modified-date: "2022-01-14"
-category: "react"
-tags: ["react", "gatsby"]
+category: "React"
+tags: ["Gatsby", "React"]
 description: "Windows 운영체제에서 Gatsby 개발 환경을 설치하는 방법"
 ---
 

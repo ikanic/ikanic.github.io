@@ -3,7 +3,7 @@ title: "[UIKit] UIWindow 객체의 역할"
 created-date: "2023-05-21 23:20"
 modified-date: "2023-05-21 23:20"
 category: "Swift"
-tags: ["iOS", "Swift", "UIKit", "글또 8기", "면접질문", "UIWindow"]
+tags: ["UIWindow", "면접질문", "UIKit", "iOS", "Swift", "글또 8기"]
 description: "UIWindow 객체의 역할은 무엇인가?"
 ---
 

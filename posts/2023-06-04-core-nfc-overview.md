@@ -3,7 +3,7 @@ title: "[Core NFC] Core NFC 훑어보기"
 created-date: "2023-06-04 16:52"
 modified-date: "2023-06-04 16:52"
 category: "Swift"
-tags: ["iOS", "Swift", "글또 8기", "Core NFC", "Framework", "NFC", "훑어보기"]
+tags: ["Core NFC", "Framework", "NFC", "iOS", "Swift", "글또 8기", "훑어보기"]
 description: "iOS에서 NFC를 사용하기 위한 Core NFC에 대해 알아보자"
 ---
 

@@ -4,7 +4,7 @@ thumbnail: "https://github.com/user-attachments/assets/a1b821bc-7189-40fd-9c02-1
 created-date: "2024-04-28 10:06"
 modified-date: "2024-04-28 10:06"
 category: "Review"
-tags: ["Udemy", "강의 후기", "Spring", "Spring Boot", "글또 9기"]
+tags: ["Spring", "Spring Boot", "강의 후기", "Udemy", "글또 9기"]
 description: 'Udemy 강의 "Spring Boot 3 & Spring Framework 6 마스터하기" 후기'
 ---
 

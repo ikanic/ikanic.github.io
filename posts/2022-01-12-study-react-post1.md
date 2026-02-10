@@ -3,8 +3,8 @@ title: "리액트 개발 환경 설치하기"
 thumbnail: "https://github.com/user-attachments/assets/9e28e063-21ec-49db-b7ca-d2d97a0f3244"
 created-date: "2022-01-12"
 modified-date: "2022-01-12"
-category: "react"
-tags: ["react"]
+category: "React"
+tags: ["React"]
 description: "Windows 운영체제에서 리액트 개발 환경을 설치하는 방법"
 ---
 

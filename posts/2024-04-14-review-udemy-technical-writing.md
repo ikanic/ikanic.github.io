@@ -4,7 +4,7 @@ thumbnail: "https://github.com/user-attachments/assets/a1b821bc-7189-40fd-9c02-1
 created-date: "2024-04-14 05:29"
 modified-date: "2024-04-14 05:29"
 category: "Review"
-tags: ["Udemy", "강의 후기", "테크니컬 라이팅", "글또 9기"]
+tags: ["테크니컬 라이팅", "Udemy", "강의 후기", "글또 9기"]
 description: 'Udemy 강의 "기술블로그로 알아보는 테크니컬 라이팅" 후기'
 ---
 

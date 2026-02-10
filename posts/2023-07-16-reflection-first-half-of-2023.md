@@ -3,7 +3,7 @@ title: "[회고] 2023년 상반기를 되돌아보며"
 created-date: "2023-07-16 12:47"
 modified-date: "2023-07-16 12:47"
 category: "Reflection"
-tags: ["글또 8기", "회고"]
+tags: ["회고", "글또 8기"]
 description: "2023년 상반기 회고"
 ---
 

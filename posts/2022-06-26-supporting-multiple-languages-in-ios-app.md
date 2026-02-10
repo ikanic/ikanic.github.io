@@ -3,7 +3,7 @@ title: "SwiftUI로 작성한 iOS 앱에서 다국어 지원하기 / Localization
 created-date: "2022-06-26 13:12"
 modified-date: "2022-06-26 13:12"
 category: "Swift"
-tags: ["Swift", "SwiftUI", "iOS", "Localization", "글또 7기"]
+tags: ["Localization", "SwiftUI", "iOS", "Swift", "글또 7기"]
 description: "SwiftUI로 작성한 iOS 앱에서 다국어를 지원해보자"
 ---
 

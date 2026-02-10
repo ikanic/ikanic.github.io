@@ -6,13 +6,13 @@ modified-date: "2023-12-24 08:08"
 category: "Swift"
 tags:
     [
+        "UIProgressView",
+        "UIResponder",
+        "UIKit Touch Event",
         "iOS",
         "글또 9기",
         "Swift",
         "UIKit",
-        "UIKit Touch Event",
-        "UIProgressView",
-        "UIResponder",
     ]
 series: "미디어 플레이어의 재생바는 어떻게 구현할 수 있을까?"
 seriesOrder: 1

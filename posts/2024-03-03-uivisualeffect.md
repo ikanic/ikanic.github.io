@@ -6,14 +6,14 @@ modified-date: "2024-03-03 03:46"
 category: "Swift"
 tags:
     [
+        "UIVisualEffect",
+        "Blur",
+        "UIBlurEffect",
+        "UIVibrancyEffect",
         "iOS",
         "글또 9기",
         "Swift",
         "UIKit",
-        "Blur",
-        "UIVisualEffect",
-        "UIBlurEffect",
-        "UIVibrancyEffect",
     ]
 description: "UIView에 흐림(Blur) 효과를 주자"
 ---

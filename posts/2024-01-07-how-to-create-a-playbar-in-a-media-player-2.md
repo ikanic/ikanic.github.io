@@ -4,7 +4,7 @@ thumbnail: "https://github.com/user-attachments/assets/01b9ec9e-5a46-48f9-9c3c-b
 created-date: "2024-01-07 23:35"
 modified-date: "2024-01-07 23:35"
 category: "Swift"
-tags: ["iOS", "글또 9기", "Swift", "UIKit", "UISlider", "UIAction", "UIControl"]
+tags: ["UISlider", "UIAction", "UIControl", "iOS", "글또 9기", "Swift", "UIKit"]
 series: "미디어 플레이어의 재생바는 어떻게 구현할 수 있을까?"
 seriesOrder: 2
 description: "UISlider를 이용한 미디어 플레이어 재생바 구현"

@@ -4,7 +4,7 @@ thumbnail: "https://github.com/user-attachments/assets/9f8aead3-8971-41c5-837f-5
 created-date: "2024-10-27 14:49"
 modified-date: "2024-10-27 14:49"
 category: "Swift"
-tags: ["iOS", "글또 10기", "Swift", "UIKit", "UIStackView"]
+tags: ["UIStackView", "UIKit", "iOS", "글또 10기", "Swift"]
 description: "UIKit의 UIStackView에 대해 알아보자"
 ---
 

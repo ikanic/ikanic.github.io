@@ -3,7 +3,7 @@ title: "Swift로 URLSession 사용해서 HTTP 통신하기"
 created-date: "2022-06-12 19:06"
 modified-date: "2022-06-12 19:06"
 category: "Swift"
-tags: ["http", "Swift", "URLSession", "글또 7기"]
+tags: ["URLSession", "http", "Swift", "글또 7기"]
 description: "URLSession을 사용해 http 통신을 해보자"
 ---
 

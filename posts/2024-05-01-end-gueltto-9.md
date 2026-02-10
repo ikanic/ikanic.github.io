@@ -4,7 +4,7 @@ thumbnail: "https://github.com/user-attachments/assets/5c1e38e1-e850-412a-88eb-4
 created-date: "2024-05-01 03:02"
 modified-date: "2024-05-01 03:02"
 category: "Reflection"
-tags: ["글또 9기", "회고"]
+tags: ["회고", "글또 9기"]
 description: "글또 9기 활동을 마치며 작성하는 회고"
 ---
 

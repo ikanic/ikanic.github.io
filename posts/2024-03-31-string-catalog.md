@@ -6,16 +6,16 @@ modified-date: "2024-03-31 02:13"
 category: "Swift"
 tags:
     [
-        "iOS",
-        "글또 9기",
-        "Swift",
+        "String Catalog",
+        "다국어 지원",
         "Localization",
         "LocalizedStringKey",
         "NSLocalizedString",
+        "iOS",
+        "글또 9기",
+        "Swift",
         "String",
-        "String Catalog",
         "Xcode",
-        "다국어 지원",
     ]
 description: "Xcode 15 이후의 버전에서 앱에 다국어를 지원해보자"
 ---

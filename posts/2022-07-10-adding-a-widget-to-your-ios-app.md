@@ -3,7 +3,7 @@ title: "iOS 앱에 Widget 추가하기"
 created-date: "2022-07-10 09:23"
 modified-date: "2022-07-10 09:23"
 category: "Swift"
-tags: ["Swift", "SwiftUI", "iOS", "Widget", "WidgetBundle", "글또 7기"]
+tags: ["Widget", "WidgetBundle", "SwiftUI", "iOS", "Swift", "글또 7기"]
 description: "iOS 앱에 Widget을 추가해보자"
 ---
 

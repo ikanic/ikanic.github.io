@@ -5,15 +5,15 @@ modified-date: "2023-06-18 01:58"
 category: "Swift"
 tags:
     [
-        "iOS",
-        "글또 8기",
-        "Swift",
-        "UIKit",
-        "Button",
         "UIButton",
         "UIAction",
+        "Button",
         "UIButton.Configuration",
         "UIButton.ConfigurationUpdateHandler",
+        "UIKit",
+        "iOS",
+        "Swift",
+        "글또 8기",
     ]
 description: "iOS 15 이후에 새롭게 추가된 UIButton 구성 방법에 대해 알아보자"
 ---
