@@ -17,9 +17,10 @@ export default function PostCardHorizontal({ post }: PostCardHorizontalProps) {
     return (
         <Link href={`/blog/${post.slug}`}>
             <article className="group backdrop-blur-2xl bg-white/40 border border-white/60 rounded-2xl overflow-hidden hover:bg-white/60 hover:border-white/80 hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.2)] transition-all duration-300">
-                <div className="flex flex-col sm:flex-row">
-                    {/* 콘텐츠 영역 */}
-                    <div className="flex-1 p-6 flex flex-col justify-between min-w-0 order-2 sm:order-1">
+                {/* sm:h-56 - 컨텐츠 많은 카드 기준 높이(224px)로 고정 */}
+                <div className="flex flex-col sm:flex-row sm:h-56">
+                    {/* 콘텐츠 영역 - justify-center로 위아래 균등 여백 */}
+                    <div className="flex-1 p-6 flex flex-col justify-center gap-3 min-w-0 order-2 sm:order-1">
                         <div>
                             {/* 시리즈 배지 */}
                             {post.series && (
@@ -37,7 +38,7 @@ export default function PostCardHorizontal({ post }: PostCardHorizontalProps) {
 
                             {/* 설명 */}
                             {post.description && (
-                                <p className="text-gray-700 mb-4 line-clamp-2 text-sm sm:text-base">
+                                <p className="text-gray-700 mb-3 line-clamp-2 text-sm sm:text-base">
                                     {post.description}
                                 </p>
                             )}
@@ -89,15 +90,15 @@ export default function PostCardHorizontal({ post }: PostCardHorizontalProps) {
                         </div>
                     </div>
 
-                    {/* 썸네일 이미지 - 16:9 비율 (썸네일이 있을 때만 표시) */}
+                    {/* 썸네일 이미지 - 16:9 비율 유지하면서 카드 전체 높이 채움 */}
                     {post.thumbnail && (
-                        <div className="relative w-full sm:w-64 aspect-video sm:aspect-video shrink-0 overflow-hidden order-1 sm:order-2">
+                        <div className="relative w-full h-48 sm:w-auto sm:h-full sm:aspect-[16/9] shrink-0 overflow-hidden order-1 sm:order-2">
                             <Image
                                 src={post.thumbnail}
                                 alt={post.title}
                                 fill
                                 className="object-cover group-hover:scale-105 transition-transform duration-300"
-                                sizes="(max-width: 640px) 100vw, 256px"
+                                sizes="(max-width: 640px) 100vw, 398px"
                             />
                         </div>
                     )}
