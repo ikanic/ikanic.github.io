@@ -105,16 +105,26 @@ export const projectConfig = {
     projects: [
         {
             id: 1,
-            title: ".",
-            description: ".",
-            tags: ["test-tag"],
+            title: "PiPPl",
+            description:
+                "iOS / iPadOS용 Picture in Picture 비디오 플레이어 앱입니다.",
+            tags: ["Picture in Picture", "AVKit", "PhotoKit"],
             image: "🌐",
             // 링크는 필요한 것만 추가 (없으면 빈 배열)
             links: [
-                { type: "demo", url: "#", label: "Demo" },
-                // { type: "github", url: "https://github.com", label: "GitHub" },
+                // { type: "demo", url: "#", label: "Demo" },
+                {
+                    type: "github",
+                    url: "https://github.com/taek0622/PiPPl",
+                    label: "GitHub",
+                },
+                {
+                    type: "appstore",
+                    url: "https://apps.apple.com/kr/app/pippl/id6479563734",
+                    label: "App Store",
+                },
             ],
-            period: "2026.02",
+            period: "2024.01 -",
         },
         // {
         //     id: 2,
