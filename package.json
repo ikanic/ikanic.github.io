@@ -6,7 +6,8 @@
         "dev": "next dev",
         "prebuild": "node scripts/generate-posts-json.js && node scripts/generate-rss.js && node scripts/generate-sitemap.js",
         "build": "next build",
-        "start": "next start"
+        "start": "next start",
+        "preview": "serve out"
     },
     "dependencies": {
         "date-fns": "^4.1.0",
@@ -33,6 +34,7 @@
         "@types/react": "^19",
         "@types/react-dom": "^19",
         "babel-plugin-react-compiler": "1.0.0",
+        "serve": "^14.2.5",
         "tailwindcss": "^4",
         "typescript": "^5"
     }
