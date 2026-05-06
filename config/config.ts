@@ -10,7 +10,7 @@ export const siteConfig = {
 export const contactInfo = {
     email: "min4644@gmail.com",
     github: "https://github.com/taek0622",
-    linkedin: "https://www.linkedin.com/in/mintaek-kim/",
+    linkedin: "https://www.linkedin.com/in/ian-kim-kr/",
     x: "https://x.com/i_k_an_ic", // Twitter → X
 };
 
