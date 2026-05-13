@@ -53,16 +53,16 @@ export async function generateMetadata({
 
     return {
         title: post.title,
-        description: post.description || `${post.title} - MeenuLog`,
+        description: post.description || `${post.title} - DevIan`,
         keywords: post.tags?.join(", "),
-        authors: [{ name: "Mintaek Kim" }],
+        authors: [{ name: "Ian Kim" }],
         openGraph: {
             title: post.title,
-            description: post.description || `${post.title} - MeenuLog`,
+            description: post.description || `${post.title} - DevIan`,
             type: "article",
             publishedTime: post.createdDate,
             modifiedTime: post.modifiedDate || post.createdDate,
-            authors: ["Mintaek Kim"],
+            authors: ["Ian Kim"],
             tags: post.tags,
             images: post.thumbnail
                 ? [
@@ -78,7 +78,7 @@ export async function generateMetadata({
         twitter: {
             card: "summary_large_image",
             title: post.title,
-            description: post.description || `${post.title} - MeenuLog`,
+            description: post.description || `${post.title} - DevIan`,
             images: post.thumbnail ? [post.thumbnail] : [],
         },
     };
@@ -120,12 +120,12 @@ export default async function PostPage({ params }: PostPageProps) {
                         dateModified: post.modifiedDate || post.createdDate,
                         author: {
                             "@type": "Person",
-                            name: "Mintaek Kim",
+                            name: "Ian Kim",
                             url: "https://ikanic.github.io",
                         },
                         publisher: {
                             "@type": "Person",
-                            name: "Mintaek Kim",
+                            name: "Ian Kim",
                         },
                         keywords: post.tags?.join(", "),
                     }),

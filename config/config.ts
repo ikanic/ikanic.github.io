@@ -1,9 +1,9 @@
 // 사이트 기본 정보
 export const siteConfig = {
-    title: "MeenuLog",
+    title: "DevIan",
     description: "개발, 디자인, 그리고 일상의 이야기를 공유합니다",
-    author: "Mintaek Kim",
-    copyright: "© 2021-2026 MeenuLog. Built with Next.js & Tailwind CSS",
+    author: "Ian Kim",
+    copyright: "© 2021-2026 DevIan. Built with Next.js & Tailwind CSS",
 };
 
 // 연락처 정보
