@@ -13,7 +13,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-    metadataBase: new URL("https://taek0622.github.io"),
+    metadataBase: new URL("https://ikanic.github.io"),
     title: {
         default: siteConfig.title,
         template: `%s | ${siteConfig.title}`,
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
         "SwiftUI",
         "개발자",
     ],
-    authors: [{ name: siteConfig.author, url: "https://taek0622.github.io" }],
+    authors: [{ name: siteConfig.author, url: "https://ikanic.github.io" }],
     creator: siteConfig.author,
 
     // 파비콘 설정
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
     openGraph: {
         type: "website",
         locale: "ko_KR",
-        url: "https://taek0622.github.io",
+        url: "https://ikanic.github.io",
         title: siteConfig.title,
         description: siteConfig.description,
         siteName: siteConfig.title,
@@ -75,7 +75,7 @@ export const metadata: Metadata = {
     },
     alternates: {
         types: {
-            "application/rss+xml": "https://taek0622.github.io/rss.xml",
+            "application/rss+xml": "https://ikanic.github.io/rss.xml",
         },
     },
 };
@@ -155,7 +155,7 @@ export default function RootLayout({
                     defer
                     src="https://github-page-analytics.vercel.app/script.js"
                     data-website-id="148eef8f-df64-45cc-8663-546df874370c"
-                    data-domains="taek0622.github.io"
+                    data-domains="ikanic.github.io"
                 />
             </head>
             <body className={inter.className}>

@@ -18,7 +18,7 @@ export default function GiscusComments() {
         // Giscus 스크립트 로드
         const script = document.createElement("script");
         script.src = "https://giscus.app/client.js";
-        script.setAttribute("data-repo", "taek0622/taek0622.github.io");
+        script.setAttribute("data-repo", "ikanic/ikanic.github.io");
         script.setAttribute(
             "data-repo-id",
             process.env.NEXT_PUBLIC_GISCUS_REPO_ID || "",
@@ -36,7 +36,7 @@ export default function GiscusComments() {
         // 커스텀 테마 CSS 파일 사용
         script.setAttribute(
             "data-theme",
-            "https://taek0622.github.io/giscus-theme.css",
+            "https://ikanic.github.io/giscus-theme.css",
         );
         script.setAttribute("data-lang", "ko");
         script.setAttribute("data-loading", "lazy");

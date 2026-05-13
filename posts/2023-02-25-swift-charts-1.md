@@ -250,7 +250,7 @@ Chart {
 그 외에도 다양한 방법으로 차트를 사용자 지정할 수 있습니다.<br>
 예를 들면 막대 너비를 설정하고, 다른 범례 기호를 선택하거나, 축을 변경할 수도 있습니다.
 
-해당 예제의 코드 전문은 [여기](https://github.com/taek0622/SwiftUICodeForBlog/blob/main/SwiftUIForBlog/BarChart.swift)에서 확인할 수 있습니다.
+해당 예제의 코드 전문은 [여기](https://github.com/ikanic/SwiftUICodeForBlog/blob/main/SwiftUIForBlog/BarChart.swift)에서 확인할 수 있습니다.
 
 # 후기
 

@@ -181,7 +181,7 @@ class UserInfo: NSObject {
 
 `Objective-C` 런타임에 의존한다는 점 때문에 최신의 Swift 코드에서는 `KVO`보다는 다른 방법들을 사용하는 것 같습니다.
 
-위에서 사용한 예제 코드는 [KVO 예제 링크](https://github.com/taek0622/iOS-UIKit-Dev-Note/blob/main/iOS_UIKit_Dev_Note/KVOPattern/KVOViewController.swift)에서 확인하실 수 있습니다.
+위에서 사용한 예제 코드는 [KVO 예제 링크](https://github.com/ikanic/iOS-UIKit-Dev-Note/blob/main/iOS_UIKit_Dev_Note/KVOPattern/KVOViewController.swift)에서 확인하실 수 있습니다.
 
 ## 후기
 

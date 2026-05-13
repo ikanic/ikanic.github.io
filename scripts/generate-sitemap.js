@@ -6,7 +6,7 @@ const postsDirectory = path.join(process.cwd(), "posts");
 const projectsDirectory = path.join(process.cwd(), "projects");
 const outputPath = path.join(process.cwd(), "public", "sitemap.xml");
 
-const siteUrl = "https://taek0622.github.io";
+const siteUrl = "https://ikanic.github.io";
 
 function parseDate(dateStr) {
     if (!dateStr) return new Date().toISOString().split("T")[0];

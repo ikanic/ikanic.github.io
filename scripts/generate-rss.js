@@ -5,7 +5,7 @@ const matter = require("gray-matter");
 const postsDirectory = path.join(process.cwd(), "posts");
 const outputPath = path.join(process.cwd(), "public", "rss.xml");
 
-const siteUrl = "https://taek0622.github.io";
+const siteUrl = "https://ikanic.github.io";
 const siteTitle = "MeenuLog";
 const siteDescription = "개발, 디자인, 그리고 일상의 이야기를 공유합니다";
 const author = "Mintaek Kim";

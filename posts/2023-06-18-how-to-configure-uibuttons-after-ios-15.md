@@ -291,7 +291,7 @@ configuraitonUpdateHandler를 사용하게 되면 configurationUpdateHandler의 
 
 앞으로의 UIButton은 또 어떤 방식으로 새로운 업데이트가 있을지 기대가 되네요.<br>
 
-위에서 사용한 예제들은 조금 더 다듬은 코드로 [기존 UIButton 구성 방법, 새로운 UIButton 구성 방법](https://github.com/taek0622/iOS-UIKit-Dev-Note/blob/main/iOS_UIKit_Dev_Note/UIButton/NewUIButtonViewController.swift)에서 확인하실 수 있습니다.
+위에서 사용한 예제들은 조금 더 다듬은 코드로 [기존 UIButton 구성 방법, 새로운 UIButton 구성 방법](https://github.com/ikanic/iOS-UIKit-Dev-Note/blob/main/iOS_UIKit_Dev_Note/UIButton/NewUIButtonViewController.swift)에서 확인하실 수 있습니다.
 
 ## 후기
 

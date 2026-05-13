@@ -3,4 +3,4 @@ User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://taek0622.github.io/sitemap.xml
+Sitemap: https://ikanic.github.io/sitemap.xml

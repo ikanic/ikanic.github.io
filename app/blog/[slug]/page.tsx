@@ -121,7 +121,7 @@ export default async function PostPage({ params }: PostPageProps) {
                         author: {
                             "@type": "Person",
                             name: "Mintaek Kim",
-                            url: "https://taek0622.github.io",
+                            url: "https://ikanic.github.io",
                         },
                         publisher: {
                             "@type": "Person",

@@ -9,7 +9,7 @@ export const siteConfig = {
 // 연락처 정보
 export const contactInfo = {
     email: "min4644@gmail.com",
-    github: "https://github.com/taek0622",
+    github: "https://github.com/ikanic",
     linkedin: "https://www.linkedin.com/in/ian-kim-kr/",
     x: "https://x.com/i_k_an_ic", // Twitter → X
 };
@@ -115,7 +115,7 @@ export const projectConfig = {
                 // { type: "demo", url: "#", label: "Demo" },
                 {
                     type: "github",
-                    url: "https://github.com/taek0622/PiPPl",
+                    url: "https://github.com/ikanic/PiPPl",
                     label: "GitHub",
                 },
                 {
